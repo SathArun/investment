@@ -1,0 +1,42 @@
+[
+  {
+    "id": "covid_2020",
+    "name": "COVID-19 Crash (2020)",
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-05",
+    "nifty50_drawdown_pct": -38.1,
+    "recovery_months": 8,
+    "description": "Global pandemic-driven market crash"
+  },
+  {
+    "id": "gfc_2008",
+    "name": "Global Financial Crisis (2008-09)",
+    "peak_date": "2008-01-08",
+    "trough_date": "2009-03-09",
+    "recovery_date": "2010-11-05",
+    "nifty50_drawdown_pct": -60.9,
+    "recovery_months": 32,
+    "description": "US subprime mortgage crisis spillover"
+  },
+  {
+    "id": "rate_hike_2022",
+    "name": "Global Rate Hike Cycle (2022)",
+    "peak_date": "2022-01-18",
+    "trough_date": "2022-06-17",
+    "recovery_date": "2022-10-31",
+    "nifty50_drawdown_pct": -16.3,
+    "recovery_months": 5,
+    "description": "Fed/RBI rate hikes causing equity correction"
+  },
+  {
+    "id": "demonetization_2016",
+    "name": "Demonetisation Shock (2016)",
+    "peak_date": "2016-09-08",
+    "trough_date": "2016-12-26",
+    "recovery_date": "2017-03-15",
+    "nifty50_drawdown_pct": -14.9,
+    "recovery_months": 3,
+    "description": "India-specific demonetization shock"
+  }
+]

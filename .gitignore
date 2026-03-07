@@ -1,0 +1,46 @@
+# == Python ==================================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# == Secrets / Environment ===================================================
+# .env.example IS committed (setup template). Actual .env files are ignored.
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# == Backend runtime data ====================================================
+# SQLite DB -- rebuilt via alembic migrations + seed scripts
+backend/data/*.db
+# Generated PDF reports -- advisor/client-specific, not source
+backend/data/pdfs/
+
+# == Frontend build output & dependencies ====================================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# == Claude Code local settings ==============================================
+# Per-machine permission overrides; not shared
+.claude/settings.local.json
+
+# == OS / Editor =============================================================
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/

@@ -1,0 +1,8 @@
+[
+  {"ticker": "^NSEI", "name": "Nifty 50", "asset_class_id": "eq_index", "description": "NSE Nifty 50 Index"},
+  {"ticker": "^BSESN", "name": "BSE Sensex", "asset_class_id": "eq_index", "description": "BSE Sensex Index"},
+  {"ticker": "^NSMIDCP", "name": "Nifty Midcap 100", "asset_class_id": "eq_midcap", "description": "Nifty Midcap 100 Index"},
+  {"ticker": "GOLDBEES.NS", "name": "Nippon Gold ETF", "asset_class_id": "gold_etf", "description": "Gold ETF proxy"},
+  {"ticker": "EMBASSY.NS", "name": "Embassy REIT", "asset_class_id": "reit", "description": "REIT proxy"},
+  {"ticker": "NIFTYIT.NS", "name": "Nifty IT", "asset_class_id": "eq_index", "description": "Nifty IT Sector Index"}
+]

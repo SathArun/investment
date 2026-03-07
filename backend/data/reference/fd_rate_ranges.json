@@ -1,0 +1,22 @@
+{
+  "major_banks": {
+    "description": "SBI, HDFC, ICICI, Axis — major private/public banks",
+    "rate_min": 0.060,
+    "rate_max": 0.075,
+    "typical_tenure_months": [12, 24, 36, 60],
+    "senior_citizen_extra": 0.005
+  },
+  "small_finance_banks": {
+    "description": "AU SFB, Equitas, Jana, ESAF — small finance banks",
+    "rate_min": 0.075,
+    "rate_max": 0.090,
+    "typical_tenure_months": [12, 24, 36],
+    "senior_citizen_extra": 0.005
+  },
+  "post_office": {
+    "description": "Post Office Time Deposit (government guaranteed)",
+    "rate_min": 0.068,
+    "rate_max": 0.073,
+    "typical_tenure_months": [12, 24, 36, 60]
+  }
+}
