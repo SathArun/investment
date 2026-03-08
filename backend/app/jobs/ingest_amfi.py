@@ -111,8 +111,8 @@ def upsert_nav_history(records: list[dict], session) -> tuple[int, int]:
     return inserted, skipped
 
 
-def run() -> None:
-    """Main entry point for AMFI ingestion job."""
+def run() -> int:
+    """Main entry point for AMFI ingestion job. Returns count of inserted rows."""
     logger.info("amfi_job_start")
     try:
         raw = fetch_amfi_nav()
@@ -125,6 +125,7 @@ def run() -> None:
             logger.info("amfi_job_complete", inserted=inserted, skipped=skipped)
         finally:
             session.close()
+        return inserted
     except Exception as e:
         logger.error("amfi_job_failed", error=str(e))
         raise

@@ -141,8 +141,8 @@ def fetch_nps_html() -> str:
         raise
 
 
-def run() -> None:
-    """Main entry point for NPS returns ingestion."""
+def run() -> int:
+    """Main entry point for NPS returns ingestion. Returns total rows processed."""
     logger.info("nps_job_start")
     try:
         html = fetch_nps_html()
@@ -152,10 +152,12 @@ def run() -> None:
         with SessionLocal() as session:
             inserted, updated = upsert_nps_returns(records, session)
             logger.info("nps_job_complete", inserted=inserted, updated=updated)
+        return inserted + updated
     except Exception as e:
         logger.error("nps_job_failed", error=str(e))
         # Don't re-raise — retain previous week's data
         logger.info("nps_job_fallback", message="Retaining previous data")
+        return 0
 
 
 if __name__ == "__main__":

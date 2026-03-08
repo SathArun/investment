@@ -124,14 +124,15 @@ def _upsert_computed_metric(session, product_id: str, product_type: str, compute
         session.add(row)
 
 
-def run() -> None:
-    """Main entry point for nightly metrics job."""
+def run() -> int:
+    """Main entry point for nightly metrics job. Returns count of products processed."""
     logger.info("compute_metrics_job_start")
     start = time.time()
     with SessionLocal() as session:
         result = compute_all_product_metrics(session)
     elapsed = time.time() - start
     logger.info("compute_metrics_job_done", elapsed_seconds=round(elapsed, 1), **result)
+    return result.get("processed", 0)
 
 
 if __name__ == "__main__":

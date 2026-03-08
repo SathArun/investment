@@ -10,32 +10,74 @@ scheduler = BackgroundScheduler(timezone="Asia/Kolkata")
 
 def _run_amfi():
     from app.jobs.ingest_amfi import run
-    run()
+    from app.admin.service import record_start, record_finish
+    run_id = record_start("ingest_amfi")
+    try:
+        rows = run()
+        record_finish(run_id, "success", rows_affected=rows or 0)
+    except Exception as e:
+        record_finish(run_id, "failed", error_msg=str(e))
+        raise
 
 
 def _run_equity():
     from app.jobs.ingest_equity import run
-    run()
+    from app.admin.service import record_start, record_finish
+    run_id = record_start("ingest_equity")
+    try:
+        rows = run()
+        record_finish(run_id, "success", rows_affected=rows or 0)
+    except Exception as e:
+        record_finish(run_id, "failed", error_msg=str(e))
+        raise
 
 
 def _run_nps():
     from app.jobs.ingest_nps import run
-    run()
+    from app.admin.service import record_start, record_finish
+    run_id = record_start("ingest_nps")
+    try:
+        rows = run()
+        record_finish(run_id, "success", rows_affected=rows or 0)
+    except Exception as e:
+        record_finish(run_id, "failed", error_msg=str(e))
+        raise
 
 
 def _run_compute_metrics():
     from app.jobs.compute_metrics import run
-    run()
+    from app.admin.service import record_start, record_finish
+    run_id = record_start("compute_metrics")
+    try:
+        rows = run()
+        record_finish(run_id, "success", rows_affected=rows or 0)
+    except Exception as e:
+        record_finish(run_id, "failed", error_msg=str(e))
+        raise
 
 
 def _run_compute_scores():
     from app.jobs.compute_scores import run
-    run()
+    from app.admin.service import record_start, record_finish
+    run_id = record_start("compute_scores")
+    try:
+        rows = run()
+        record_finish(run_id, "success", rows_affected=rows or 0)
+    except Exception as e:
+        record_finish(run_id, "failed", error_msg=str(e))
+        raise
 
 
 def _run_mfapi_backfill():
     from app.jobs.ingest_mfapi import run
-    run()
+    from app.admin.service import record_start, record_finish
+    run_id = record_start("ingest_mfapi")
+    try:
+        rows = run()
+        record_finish(run_id, "success", rows_affected=rows or 0)
+    except Exception as e:
+        record_finish(run_id, "failed", error_msg=str(e))
+        raise
 
 
 scheduler.add_job(
