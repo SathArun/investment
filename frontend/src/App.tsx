@@ -159,6 +159,8 @@ function AdminPage() {
         )}
         {isLoading && jobs.length === 0 ? (
           <div className="text-gray-400 text-sm">Loading job status...</div>
+        ) : !error && jobs.length === 0 ? (
+          <div className="text-gray-400 text-sm">No jobs found. Ensure the backend is running and try refreshing.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {jobs.map((job) => (

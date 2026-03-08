@@ -35,9 +35,12 @@ export const useAdminStore = create<AdminState>((set) => ({
     set({ isLoading: true })
     try {
       const { data } = await apiClient.get('/admin/jobs')
-      set({ jobs: data.jobs, isLoading: false })
-    } catch {
-      set({ isLoading: false })
+      set({ jobs: data.jobs, isLoading: false, error: null })
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+        ?? 'Failed to load job status. Is the backend running?'
+      set({ isLoading: false, error: msg })
     }
   },
   triggerJob: async (jobName: string) => {
