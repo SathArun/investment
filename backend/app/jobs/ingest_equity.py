@@ -27,11 +27,23 @@ def fetch_index_history(ticker: str, period: str = "10y") -> list[dict]:
         if data.empty:
             logger.warning("yfinance_empty", ticker=ticker)
             return []
+
+        # yfinance >= 1.0 returns a MultiIndex on columns; flatten to single-level
+        import pandas as pd
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+
         records = []
         for idx, row in data.iterrows():
             price_date = idx.date() if hasattr(idx, 'date') else idx
-            close = float(row['Close']) if hasattr(row['Close'], '__float__') else None
-            if close and close > 0:
+            close_val = row.get('Close')
+            if close_val is None:
+                continue
+            try:
+                close = float(close_val)
+            except (TypeError, ValueError):
+                continue
+            if close > 0:
                 records.append({"ticker": ticker, "price_date": price_date, "close_price": close})
         return records
     except Exception as e:
@@ -59,8 +71,8 @@ def upsert_index_history(ticker: str, records: list[dict], session) -> tuple[int
     return inserted, skipped
 
 
-def run() -> None:
-    """Main entry point: fetch and store all configured index tickers."""
+def run() -> int:
+    """Main entry point: fetch and store all configured index tickers. Returns total inserted rows."""
     ticker_configs = load_ticker_config()
     logger.info("equity_job_start", ticker_count=len(ticker_configs))
 
@@ -83,6 +95,7 @@ def run() -> None:
                 continue
 
     logger.info("equity_job_complete", total_inserted=total_inserted)
+    return total_inserted
 
 
 if __name__ == "__main__":

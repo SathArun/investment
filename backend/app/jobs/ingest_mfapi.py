@@ -111,12 +111,13 @@ def backfill_all_schemes(session, limit: Optional[int] = None) -> dict:
     return {"schemes_processed": len(schemes), "inserted": total_inserted, "skipped": total_skipped}
 
 
-def run() -> None:
-    """Main entry point."""
+def run() -> int:
+    """Main entry point. Returns total rows inserted."""
     logger.info("mfapi_job_start")
     with SessionLocal() as session:
         result = backfill_all_schemes(session)
     logger.info("mfapi_job_done", **result)
+    return result.get("inserted", 0)
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ from app.goals.router import router as goals_router
 from app.risk_profiler.router import router as risk_profiler_router
 from app.pdf.router import router as pdf_router
 from app.scenarios.router import router as scenarios_router
+from app.admin.router import router as admin_router
 
 
 @asynccontextmanager
@@ -40,6 +41,7 @@ app.include_router(goals_router)
 app.include_router(risk_profiler_router)
 app.include_router(pdf_router)
 app.include_router(scenarios_router)
+app.include_router(admin_router)
 
 
 @app.get("/health")

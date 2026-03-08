@@ -183,13 +183,15 @@ def compute_all_scores(session) -> dict:
     return {"total_scores": total_scores, "products": products_count}
 
 
-def run() -> None:
+def run() -> int:
+    """Main entry point for nightly score computation. Returns total scores computed."""
     logger.info("compute_scores_job_start")
     start = time.time()
     with SessionLocal() as session:
         result = compute_all_scores(session)
     elapsed = time.time() - start
     logger.info("compute_scores_job_done", elapsed_seconds=round(elapsed, 1), **result)
+    return result.get("total_scores", 0)
 
 
 if __name__ == "__main__":
