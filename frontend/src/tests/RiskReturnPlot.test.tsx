@@ -31,12 +31,12 @@ const makeProduct = (overrides: Partial<ProductRow> = {}): ProductRow => ({
   post_tax_return_1y: 0.10,
   post_tax_return_3y: 0.09,
   post_tax_return_5y: 0.08,
-  std_dev: 0.15,
-  sharpe_ratio: 0.8,
-  max_drawdown: -0.2,
+  std_dev_3y: 0.15,
+  sharpe_3y: 0.8,
+  max_drawdown_5y: -0.2,
   expense_ratio: 0.01,
-  min_investment: 500,
-  liquidity_days: 1,
+  min_investment_inr: 500,
+  liquidity_label: "Same Day",
   advisor_score: 75,
   score_breakdown: {
     risk_adjusted: 80,
@@ -60,12 +60,12 @@ describe('RiskReturnPlot', () => {
     expect(screen.getByText('Risk vs Return')).toBeInTheDocument()
   })
 
-  it('excludes null std_dev products', () => {
+  it('excludes null std_dev_3y products', () => {
     mockProducts = [
-      makeProduct({ id: 1, name: 'Valid Fund', std_dev: 0.15, post_tax_return_3y: 0.09 }),
-      makeProduct({ id: 2, name: 'No Std Dev Fund', std_dev: null, post_tax_return_3y: 0.09 }),
+      makeProduct({ id: 1, name: 'Valid Fund', std_dev_3y: 0.15, post_tax_return_3y: 0.09 }),
+      makeProduct({ id: 2, name: 'No Std Dev Fund', std_dev_3y: null, post_tax_return_3y: 0.09 }),
     ]
-    // Should render without throwing even when a product has null std_dev
+    // Should render without throwing even when a product has null std_dev_3y
     expect(() => render(<RiskReturnPlot />)).not.toThrow()
   })
 

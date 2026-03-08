@@ -42,6 +42,7 @@ const defaultStoreState = {
   fetchQuestions: mockFetchQuestions,
   fetchClients: mockFetchClients,
   submitProfile: mockSubmitProfile,
+  createClient: vi.fn(),
 }
 
 beforeEach(() => {
