@@ -1,6 +1,6 @@
 ---
 title: "Phase 4: ProductPins Hero Cards and Skeleton Loaders"
-status: pending
+status: completed
 version: "1.0"
 phase: 4
 ---

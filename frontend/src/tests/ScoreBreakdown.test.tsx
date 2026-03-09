@@ -47,7 +47,6 @@ function mockStoreWith(selectedProduct: ProductRow | null) {
         selectedProduct,
         setSelectedProduct: mockSetSelectedProduct,
         isClientView: false,
-        toggleClientView: vi.fn(),
       })
   )
 }

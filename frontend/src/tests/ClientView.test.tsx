@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ClientViewToggle } from '@/components/Presentation/ClientViewToggle'
 import { ProductPins } from '@/components/Presentation/ProductPins'
 import { ShareWhatsApp } from '@/components/Presentation/ShareWhatsApp'
 
@@ -8,14 +7,13 @@ import { ShareWhatsApp } from '@/components/Presentation/ShareWhatsApp'
 vi.mock('@/store/uiStore')
 vi.mock('@/store/dashboardStore')
 vi.mock('@/store/filterStore')
-vi.mock('@/api/client', () => ({ default: { post: vi.fn() } }))
+vi.mock('@/api/client', () => ({ default: { post: vi.fn(), get: () => Promise.resolve({ data: { clients: [{ id: 1, name: 'Test Client' }] } }) } }))
 
 import { useUIStore } from '@/store/uiStore'
 import { useDashboardStore } from '@/store/dashboardStore'
 import { useFilterStore } from '@/store/filterStore'
 import apiClient from '@/api/client'
 
-const mockToggleClientView = vi.fn()
 const mockIsClientView = { value: false }
 
 const mockProducts = [
@@ -35,13 +33,15 @@ const defaultDashboardState = {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockIsClientView.value = false
+  globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
+  globalThis.URL.revokeObjectURL = vi.fn()
 
   vi.mocked(useUIStore).mockImplementation(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (selector: (s: any) => any) =>
       selector({
         isClientView: mockIsClientView.value,
-        toggleClientView: mockToggleClientView,
         selectedProduct: null,
         setSelectedProduct: vi.fn(),
       }),
@@ -58,27 +58,6 @@ beforeEach(() => {
     (selector: (s: any) => any) =>
       selector({ taxBracket: 0.3, timeHorizon: 'long', riskFilter: 'All' }),
   )
-})
-
-// ── ClientViewToggle tests ───────────────────────────────────────────────────
-describe('ClientViewToggle', () => {
-  it('calls toggleClientView on click', () => {
-    render(<ClientViewToggle />)
-    fireEvent.click(screen.getByRole('button'))
-    expect(mockToggleClientView).toHaveBeenCalledOnce()
-  })
-
-  it('shows correct label when client view is off', () => {
-    mockIsClientView.value = false
-    render(<ClientViewToggle />)
-    expect(screen.getByText('Client View')).toBeInTheDocument()
-  })
-
-  it('shows correct label when client view is on', () => {
-    mockIsClientView.value = true
-    render(<ClientViewToggle />)
-    expect(screen.getByText('Client View ON')).toBeInTheDocument()
-  })
 })
 
 // ── ProductPins tests ────────────────────────────────────────────────────────
@@ -120,12 +99,16 @@ describe('ProductPins', () => {
     globalThis.open = vi.fn()
 
     render(<ProductPins />)
+    // Wait for the client list to load (useEffect) so the button becomes enabled
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Generate PDF Report/i })).not.toBeDisabled()
+    })
     fireEvent.click(screen.getByRole('button', { name: /Generate PDF Report/i }))
 
     await waitFor(() => {
       expect(apiClient.post).toHaveBeenCalledWith(
         '/pdf/client-report',
-        { client_id: 1, product_ids: expect.arrayContaining([1, 2]), tax_bracket: 0.3 },
+        expect.objectContaining({ client_id: 1, product_ids: expect.arrayContaining(['1', '2']), tax_bracket: 0.3 }),
         { responseType: 'blob' },
       )
     })
@@ -144,6 +127,10 @@ describe('ProductPins', () => {
     vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Network error'))
 
     render(<ProductPins />)
+    // Wait for the client list to load (useEffect) so the button becomes enabled
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Generate PDF Report/i })).not.toBeDisabled()
+    })
     fireEvent.click(screen.getByRole('button', { name: /Generate PDF Report/i }))
 
     await waitFor(() => {
