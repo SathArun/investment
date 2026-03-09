@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useForm } from 'react-hook-form'
 import { useGoalStore } from '@/store/goalStore'
 import type { GoalFormData } from '@/store/goalStore'
@@ -289,10 +290,18 @@ export function GoalForm() {
         </button>
       </form>
 
-      {/* Loading spinner */}
       {isLoadingPlan && (
-        <div className="flex justify-center py-8" role="status" aria-label="Loading plan">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+        <div className="space-y-4">
+          {/* Summary cards skeleton */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-[88px] rounded-lg motion-reduce:animate-none" />
+            ))}
+          </div>
+          {/* Corpus chart skeleton */}
+          <Skeleton className="h-[200px] w-full rounded-lg motion-reduce:animate-none" />
+          {/* Allocation pie skeleton */}
+          <Skeleton className="h-[200px] w-full rounded-lg motion-reduce:animate-none" />
         </div>
       )}
 

@@ -11,10 +11,16 @@ class MockResizeObserver {
 ;(globalThis as unknown as { ResizeObserver: typeof MockResizeObserver }).ResizeObserver = MockResizeObserver
 
 let mockProducts: ProductRow[] = []
+let mockIsClientView = false
 
 vi.mock('@/store/dashboardStore', () => ({
   useDashboardStore: (selector: (s: { products: ProductRow[] }) => unknown) =>
     selector({ products: mockProducts }),
+}))
+
+vi.mock('@/store/uiStore', () => ({
+  useUIStore: (selector: (s: { isClientView: boolean }) => unknown) =>
+    selector({ isClientView: mockIsClientView }),
 }))
 
 import { RiskReturnPlot } from '@/components/Dashboard/RiskReturnPlot'
@@ -51,6 +57,7 @@ const makeProduct = (overrides: Partial<ProductRow> = {}): ProductRow => ({
 
 beforeEach(() => {
   mockProducts = []
+  mockIsClientView = false
 })
 
 describe('RiskReturnPlot', () => {
@@ -73,5 +80,33 @@ describe('RiskReturnPlot', () => {
     mockProducts = []
     expect(() => render(<RiskReturnPlot />)).not.toThrow()
     expect(screen.getByText('Risk vs Return')).toBeInTheDocument()
+  })
+
+  it('renders without error in advisor view (isClientView=false)', () => {
+    mockIsClientView = false
+    mockProducts = [makeProduct()]
+    expect(() => render(<RiskReturnPlot />)).not.toThrow()
+    expect(screen.getByText('Risk vs Return')).toBeInTheDocument()
+  })
+
+  it('renders without error in client view (isClientView=true)', () => {
+    mockIsClientView = true
+    mockProducts = [makeProduct()]
+    expect(() => render(<RiskReturnPlot />)).not.toThrow()
+    expect(screen.getByText('Risk vs Return')).toBeInTheDocument()
+  })
+
+  it('does not show Advisor Score text in client view', () => {
+    mockIsClientView = true
+    mockProducts = [makeProduct()]
+    render(<RiskReturnPlot />)
+    expect(screen.queryByText(/Advisor Score/i)).not.toBeInTheDocument()
+  })
+
+  it('does not show Advisor Score text when products list is empty in client view', () => {
+    mockIsClientView = true
+    mockProducts = []
+    render(<RiskReturnPlot />)
+    expect(screen.queryByText(/Advisor Score/i)).not.toBeInTheDocument()
   })
 })

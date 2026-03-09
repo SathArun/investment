@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { AssetTable } from '@/components/Dashboard/AssetTable'
+import { AssetTable, CLIENT_VIEW_COLUMNS } from '@/components/Dashboard/AssetTable'
 import type { ProductRow, SortDir, TaxBracket, TimeHorizon, RiskFilter } from '@/types/product'
 
 // ResizeObserver is required by Radix UI Popper (tooltip portal)
@@ -239,5 +239,88 @@ describe('AssetTable', () => {
     fireEvent.click(pinButton)
 
     expect(mockTogglePin).toHaveBeenCalledWith(42)
+  })
+
+  it('shows skeleton rows when isLoading=true and products=[]', () => {
+    vi.mocked(useDashboardStore).mockReturnValue({
+      ...defaultDashboardState,
+      isLoading: true,
+      products: [],
+    })
+
+    render(<AssetTable />)
+
+    // Skeleton elements are divs with the animate-pulse class from skeleton.tsx
+    const skeletons = document.querySelectorAll('.animate-pulse')
+    expect(skeletons.length).toBeGreaterThan(0)
+    expect(screen.queryByText('No products available')).not.toBeInTheDocument()
+  })
+
+  it('shows "No products available" when isLoading=false and products=[]', () => {
+    vi.mocked(useDashboardStore).mockReturnValue({
+      ...defaultDashboardState,
+      isLoading: false,
+      products: [],
+    })
+
+    render(<AssetTable />)
+
+    expect(screen.getByText('No products available')).toBeInTheDocument()
+    const skeletons = document.querySelectorAll('.animate-pulse')
+    expect(skeletons.length).toBe(0)
+  })
+
+  it('CLIENT_VIEW_COLUMNS is exported and does not include advisor_score', () => {
+    expect(CLIENT_VIEW_COLUMNS).toBeDefined()
+    expect((CLIENT_VIEW_COLUMNS as readonly string[]).includes('advisor_score')).toBe(false)
+    expect((CLIENT_VIEW_COLUMNS as readonly string[]).includes('name')).toBe(true)
+  })
+
+  it('client view hides Advisor Score column header', () => {
+    const products = [makeProduct({ id: 1, name: 'Fund A' })]
+    vi.mocked(useDashboardStore).mockReturnValue({
+      ...defaultDashboardState,
+      products,
+    })
+
+    render(<AssetTable isClientView={true} />)
+
+    expect(screen.queryByText('Advisor Score')).not.toBeInTheDocument()
+  })
+
+  it('advisor view shows Advisor Score column header', () => {
+    const products = [makeProduct({ id: 1, name: 'Fund A' })]
+    vi.mocked(useDashboardStore).mockReturnValue({
+      ...defaultDashboardState,
+      products,
+    })
+
+    render(<AssetTable isClientView={false} />)
+
+    expect(screen.getByText(/Advisor Score/)).toBeInTheDocument()
+  })
+
+  it('client view hides Breakdown column header', () => {
+    const products = [makeProduct({ id: 1, name: 'Fund A' })]
+    vi.mocked(useDashboardStore).mockReturnValue({
+      ...defaultDashboardState,
+      products,
+    })
+
+    render(<AssetTable isClientView={true} />)
+
+    expect(screen.queryByText('Breakdown')).not.toBeInTheDocument()
+  })
+
+  it('advisor view shows Breakdown column header', () => {
+    const products = [makeProduct({ id: 1, name: 'Fund A' })]
+    vi.mocked(useDashboardStore).mockReturnValue({
+      ...defaultDashboardState,
+      products,
+    })
+
+    render(<AssetTable isClientView={false} />)
+
+    expect(screen.getByText('Breakdown')).toBeInTheDocument()
   })
 })

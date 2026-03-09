@@ -72,11 +72,11 @@ npx shadcn@latest add button input card badge select skeleton tooltip separator
 
 ## Implementation Phases
 
-- [ ] [Phase 1: Foundation — shadcn/ui, Inter Font, uiStore](phase-1.md)
-- [ ] [Phase 2: App Shell and Sidebar Navigation](phase-2.md)
-- [ ] [Phase 3: Dual-Audience Dashboard — ViewToggle, FilterSummary, AssetTable, RiskReturnPlot](phase-3.md)
-- [ ] [Phase 4: ProductPins Hero Cards and Skeleton Loaders](phase-4.md)
-- [ ] [Phase 5: shadcn/ui Component Migration and Integration Tests](phase-5.md)
+- [x] [Phase 1: Foundation — shadcn/ui, Inter Font, uiStore](phase-1.md)
+- [x] [Phase 2: App Shell and Sidebar Navigation](phase-2.md)
+- [x] [Phase 3: Dual-Audience Dashboard — ViewToggle, FilterSummary, AssetTable, RiskReturnPlot](phase-3.md)
+- [x] [Phase 4: ProductPins Hero Cards and Skeleton Loaders](phase-4.md)
+- [x] [Phase 5: shadcn/ui Component Migration and Integration Tests](phase-5.md)
 
 ---
 

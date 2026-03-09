@@ -10,6 +10,7 @@ import {
   Cell,
 } from 'recharts'
 import { useDashboardStore } from '@/store/dashboardStore'
+import { useUIStore } from '@/store/uiStore'
 
 const CATEGORY_COLORS: Record<string, string> = {
   eq_largecap: '#3b82f6',
@@ -41,23 +42,28 @@ interface ChartPoint {
 interface CustomTooltipProps {
   active?: boolean
   payload?: Array<{ payload: ChartPoint }>
+  isClientView?: boolean
 }
 
-function CustomTooltip({ active, payload }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, isClientView }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   const point = payload[0].payload
   return (
     <div className="bg-white border border-gray-200 rounded p-3 shadow text-sm">
       <p className="font-semibold">{point.name}</p>
-      <p>Risk (Std Dev): {point.x.toFixed(2)}%</p>
-      <p>Post-Tax 3Y: {point.y.toFixed(2)}%</p>
-      <p>Advisor Score: {Math.round(point.r * 5)}</p>
+      <p>{isClientView ? 'Risk Level' : 'Risk (Std Dev)'}: {point.x.toFixed(2)}%</p>
+      <p>{isClientView ? 'Annual Return' : 'Post-Tax 3Y'}: {point.y.toFixed(2)}%</p>
+      {!isClientView && <p>Advisor Score: {Math.round(point.r * 5)}</p>}
     </div>
   )
 }
 
 export function RiskReturnPlot() {
   const products = useDashboardStore((s) => s.products)
+  const isClientView = useUIStore((s) => s.isClientView)
+
+  const xLabel = isClientView ? 'Risk Level' : 'Risk (Std Dev)'
+  const yLabel = isClientView ? 'Annual Return' : 'Post-Tax Return (3Y)'
 
   // Filter out products with null std_dev or null post_tax_return_3y
   const validProducts = products.filter(
@@ -91,19 +97,19 @@ export function RiskReturnPlot() {
           <XAxis
             dataKey="x"
             type="number"
-            name="Risk (Std Dev)"
-            label={{ value: 'Risk (Std Dev)', position: 'insideBottom', offset: -10 }}
+            name={xLabel}
+            label={{ value: xLabel, position: 'insideBottom', offset: -10 }}
             domain={['auto', 'auto']}
           />
           <YAxis
             dataKey="y"
             type="number"
-            name="Post-Tax Return (3Y)"
-            label={{ value: 'Post-Tax Return (3Y)', angle: -90, position: 'insideLeft' }}
+            name={yLabel}
+            label={{ value: yLabel, angle: -90, position: 'insideLeft' }}
             domain={['auto', 'auto']}
           />
-          <RechartsTooltip content={<CustomTooltip />} />
-          <Legend verticalAlign="top" />
+          <RechartsTooltip content={<CustomTooltip isClientView={isClientView} />} />
+          {!isClientView && <Legend verticalAlign="top" />}
           {assetClasses.map((assetClass) => (
             <Scatter
               key={assetClass}

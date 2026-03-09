@@ -19,7 +19,10 @@ A web application for SEBI-registered financial advisors to analyze, rank, and p
 | Frontend | React 18 + TypeScript (Vite 6) |
 | State Management | Zustand 5 |
 | Charts | Recharts 2 |
-| Styling | Tailwind CSS 3 + Radix UI |
+| Styling | Tailwind CSS 3 + shadcn/ui (New York style, Slate base) |
+| UI Components | shadcn/ui + Radix UI primitives |
+| Icons | lucide-react |
+| Font | Inter (@fontsource/inter, self-hosted, weights 400/500/600) |
 | Auth | JWT (python-jose) + bcrypt (passlib) |
 
 ---
@@ -49,9 +52,26 @@ investment/
 │   └── requirements.txt
 └── frontend/
     ├── src/
-    │   ├── App.tsx           # Router and page layout
+    │   ├── App.tsx           # Router, AppShell wiring, page components
     │   ├── api/client.ts     # Axios instance with JWT interceptors
-    │   ├── components/       # UI components (Dashboard, GoalPlanner, RiskProfiler, ScenarioPlanner, Presentation)
+    │   ├── components/
+    │   │   ├── Layout/
+    │   │   │   ├── AppShell.tsx      # flex h-screen shell (sidebar + main slots)
+    │   │   │   ├── Sidebar.tsx       # Dark collapsible sidebar
+    │   │   │   ├── SidebarNav.tsx    # Nav links, active state, icon tooltips
+    │   │   │   └── SidebarFooter.tsx # Advisor name, DataFreshness, sign-out
+    │   │   ├── Presentation/
+    │   │   │   ├── ViewToggle.tsx    # Advisor / Client segmented control
+    │   │   │   └── ProductPinCard.tsx # Hero card for pinned products (client view)
+    │   │   ├── Dashboard/
+    │   │   │   └── FilterSummary.tsx # Read-only filter display for client view
+    │   │   ├── ui/                   # shadcn/ui primitives
+    │   │   │   # button, input, card, badge, select, skeleton, tooltip, separator
+    │   │   ├── Dashboard/            # AssetTable, FilterBar, RiskReturnPlot, ScoreBreakdown
+    │   │   ├── GoalPlanner/          # GoalForm
+    │   │   ├── RiskProfiler/         # Questionnaire
+    │   │   ├── ScenarioPlanner/      # SIPModeler, StressTest, RetirementWithdrawal
+    │   │   └── Admin/                # JobCard
     │   ├── store/            # Zustand stores (auth, dashboard, filter, goal, risk profiler, UI)
     │   ├── utils/            # Finance math (SIP, retirement), risk labels
     │   └── types/            # TypeScript product types
@@ -101,6 +121,34 @@ investment/
 | mfapi historical backfill | 02:00 IST Sundays | mfapi.in |
 | Compute risk metrics | 01:00 IST nightly | Internal |
 | Compute advisor scores | 00:00 IST nightly | Internal |
+
+---
+
+## Frontend Architecture
+
+### AppShell Layout
+
+`AppShell` (`components/Layout/AppShell.tsx`) wraps every authenticated page as a `flex h-screen overflow-hidden` container. It renders a dark `<aside>` on the left and a scrollable `<main>` region on the right. Sidebar width transitions between `w-60` (expanded) and `w-16` (collapsed) via `transition-[width] duration-300`.
+
+### Sidebar
+
+`Sidebar` (`components/Layout/Sidebar.tsx`) is permanently visible; it never overlays content. It contains:
+
+- **SidebarNav** — icon + label nav links for Dashboard, Goals, Risk Profiler, Scenarios, and Admin. The active route is highlighted with a left blue accent bar. When collapsed, labels are hidden and each item shows a Radix `Tooltip` on hover.
+- **SidebarFooter** — displays the logged-in advisor's name, a `DataFreshness` indicator, and a sign-out button.
+
+The collapse state is stored in `uiStore.isSidebarCollapsed` and persisted to `localStorage` under the key `sidebar_collapsed`.
+
+### Dual-Audience View
+
+A `ViewToggle` segmented control (top-right of the Dashboard header) switches between two rendering modes:
+
+| Mode | Filter Bar | AssetTable columns | Additional panels |
+|---|---|---|---|
+| **Advisor View** | Full `FilterBar` (tax bracket, horizon, category) | All columns | `RiskReturnPlot`, `ScoreBreakdown` |
+| **Client View** | `FilterSummary` (read-only) | 6 client-safe columns | `ProductPinCard` hero card grid |
+
+`ProductPinCard` (`components/Presentation/ProductPinCard.tsx`) renders pinned products as hero cards in the client view. `FilterSummary` (`components/Dashboard/FilterSummary.tsx`) shows the active filter state without interactive controls.
 
 ---
 
@@ -196,7 +244,7 @@ All protected routes require `Authorization: Bearer <JWT>`. Cross-advisor access
 | `filterStore` | Tax bracket, time horizon, category filter |
 | `goalStore` | Goal form state and API calls |
 | `riskProfilerStore` | Questionnaire answers and computed score |
-| `uiStore` | Client view toggle, selected product |
+| `uiStore` | Client view toggle, selected product; `isSidebarCollapsed` (localStorage-persisted at key `sidebar_collapsed`), `toggleSidebar`, `setSidebarCollapsed`, `setClientView` |
 
 The Axios client in `api/client.ts` attaches the JWT on every request and transparently retries with a refreshed token on HTTP 401 before redirecting to `/login`.
 
