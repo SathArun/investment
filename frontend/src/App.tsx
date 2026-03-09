@@ -33,11 +33,11 @@ function DashboardPage() {
 
   return (
     <>
-      <div className="px-6 py-3 flex items-center justify-between border-b bg-white">
+      <div className="px-6 py-3 flex items-center justify-between border-b bg-card">
         {isClientView ? <FilterSummary /> : <FilterBar />}
         <ViewToggle />
       </div>
-      <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      <main className="px-6 py-6 space-y-6">
         <ProductPins />
         <AssetTable isClientView={isClientView} onSelectProduct={setSelectedProduct} />
         {!isClientView && <RiskReturnPlot />}
@@ -49,7 +49,7 @@ function DashboardPage() {
 
 function GoalsPage() {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-6">
+    <main className="px-6 py-6">
       <GoalForm />
     </main>
   )
@@ -57,7 +57,7 @@ function GoalsPage() {
 
 function RiskProfilerPage() {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-6">
+    <main className="px-6 py-6">
       <Questionnaire />
     </main>
   )
@@ -65,7 +65,7 @@ function RiskProfilerPage() {
 
 function ScenariosPage() {
   return (
-    <main className="max-w-5xl mx-auto px-6 py-6 space-y-8">
+    <main className="px-6 py-6 space-y-8">
       <SIPModeler />
       <StressTest />
       <RetirementWithdrawal />
@@ -106,7 +106,7 @@ function AdminPage() {
   }, [fetchJobs])
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-6">
+    <main className="px-6 py-6">
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded text-sm">{error}</div>
       )}
@@ -117,7 +117,7 @@ function AdminPage() {
           ))}
         </div>
       ) : !error && jobs.length === 0 ? (
-        <div className="text-gray-400 text-sm">No jobs found. Ensure the backend is running and try refreshing.</div>
+        <div className="text-muted-foreground text-sm">No jobs found. Ensure the backend is running and try refreshing.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {jobs.map((job) => (
@@ -130,6 +130,11 @@ function AdminPage() {
 }
 
 function App() {
+  const isDarkMode = useUIStore((s) => s.isDarkMode)
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkMode)
+  }, [isDarkMode])
+
   return (
     <BrowserRouter>
       <Routes>

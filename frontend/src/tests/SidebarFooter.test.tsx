@@ -1,5 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import { SidebarFooter } from '@/components/Layout/SidebarFooter'
 import type { DataFreshness } from '@/types/product'
 
@@ -55,18 +57,28 @@ vi.mock('@/store/dashboardStore', () => ({
 }))
 
 // ---------------------------------------------------------------------------
-// Mock: uiStore
+// Mock: uiStore — includes BOTH isSidebarCollapsed AND isDarkMode/toggleTheme
 // ---------------------------------------------------------------------------
 
 let mockIsSidebarCollapsed = false
+let mockIsDarkMode = false
+let mockToggleTheme = vi.fn()
 
 vi.mock('@/store/uiStore', () => ({
   useUIStore: (selector: (s: {
     isSidebarCollapsed: boolean
+    isDarkMode: boolean
+    toggleTheme: () => void
   }) => unknown) =>
     selector({
       get isSidebarCollapsed() {
         return mockIsSidebarCollapsed
+      },
+      get isDarkMode() {
+        return mockIsDarkMode
+      },
+      get toggleTheme() {
+        return mockToggleTheme
       },
     }),
 }))
@@ -88,8 +100,16 @@ function makeFreshness(overrides: Partial<DataFreshness> = {}): DataFreshness {
   }
 }
 
+function renderFooter() {
+  return render(
+    <MemoryRouter>
+      <SidebarFooter />
+    </MemoryRouter>,
+  )
+}
+
 // ---------------------------------------------------------------------------
-// Tests
+// Setup
 // ---------------------------------------------------------------------------
 
 beforeEach(() => {
@@ -97,13 +117,19 @@ beforeEach(() => {
   mockAdvisor = null
   mockDataFreshness = null
   mockIsSidebarCollapsed = false
+  mockIsDarkMode = false
+  mockToggleTheme = vi.fn()
 })
 
-describe('SidebarFooter', () => {
+// ---------------------------------------------------------------------------
+// Tests — spec 003: advisor name, logout, DataFreshness, collapsed state
+// ---------------------------------------------------------------------------
+
+describe('SidebarFooter — advisor display', () => {
   it('renders advisor name when advisor is set', () => {
     mockAdvisor = { id: '1', name: 'Priya Sharma', email: 'priya@firm.in' }
 
-    render(<SidebarFooter />)
+    renderFooter()
 
     expect(screen.getByText('Priya Sharma')).toBeInTheDocument()
     expect(screen.getByText('priya@firm.in')).toBeInTheDocument()
@@ -112,15 +138,27 @@ describe('SidebarFooter', () => {
   it('renders "Advisor" fallback when advisor is null', () => {
     mockAdvisor = null
 
-    render(<SidebarFooter />)
+    renderFooter()
 
     expect(screen.getByText('Advisor')).toBeInTheDocument()
   })
 
+  it('hides advisor name and email text when sidebar is collapsed', () => {
+    mockAdvisor = { id: '6', name: 'Deepak Joshi', email: 'deepak@firm.in' }
+    mockIsSidebarCollapsed = true
+
+    renderFooter()
+
+    expect(screen.queryByText('Deepak Joshi')).not.toBeInTheDocument()
+    expect(screen.queryByText('deepak@firm.in')).not.toBeInTheDocument()
+  })
+})
+
+describe('SidebarFooter — logout', () => {
   it('sign out button calls logout and navigates to /login', () => {
     mockAdvisor = { id: '2', name: 'Ravi Kumar', email: 'ravi@firm.in' }
 
-    render(<SidebarFooter />)
+    renderFooter()
 
     const signOutButton = screen.getByRole('button', { name: /sign out/i })
     fireEvent.click(signOutButton)
@@ -128,15 +166,16 @@ describe('SidebarFooter', () => {
     expect(mockLogout).toHaveBeenCalledOnce()
     expect(mockNavigate).toHaveBeenCalledWith('/login')
   })
+})
 
+describe('SidebarFooter — DataFreshnessBar', () => {
   it('renders DataFreshnessBar when dataFreshness is non-null and sidebar is not collapsed', () => {
     mockAdvisor = { id: '3', name: 'Anita Desai', email: 'anita@firm.in' }
     mockDataFreshness = makeFreshness()
     mockIsSidebarCollapsed = false
 
-    render(<SidebarFooter />)
+    renderFooter()
 
-    // DataFreshnessBar renders AMFI, Equity, NPS labels
     expect(screen.getByText(/AMFI/)).toBeInTheDocument()
     expect(screen.getByText(/Equity/)).toBeInTheDocument()
     expect(screen.getByText(/NPS/)).toBeInTheDocument()
@@ -147,7 +186,7 @@ describe('SidebarFooter', () => {
     mockDataFreshness = makeFreshness()
     mockIsSidebarCollapsed = true
 
-    render(<SidebarFooter />)
+    renderFooter()
 
     expect(screen.queryByText(/AMFI/)).not.toBeInTheDocument()
   })
@@ -157,18 +196,76 @@ describe('SidebarFooter', () => {
     mockDataFreshness = null
     mockIsSidebarCollapsed = false
 
-    render(<SidebarFooter />)
+    renderFooter()
 
     expect(screen.queryByText(/AMFI/)).not.toBeInTheDocument()
   })
+})
 
-  it('hides advisor name and email text when sidebar is collapsed', () => {
-    mockAdvisor = { id: '6', name: 'Deepak Joshi', email: 'deepak@firm.in' }
+// ---------------------------------------------------------------------------
+// Tests — spec 004: theme toggle icon, aria-label, interaction, collapsed label
+// ---------------------------------------------------------------------------
+
+describe('SidebarFooter — theme toggle icon', () => {
+  it('renders Moon icon (aria-label contains "light") when isDarkMode=true', () => {
+    mockIsDarkMode = true
+    renderFooter()
+    expect(screen.getByRole('button', { name: /switch to light mode/i })).toBeInTheDocument()
+  })
+
+  it('renders Sun icon (aria-label contains "dark") when isDarkMode=false', () => {
+    mockIsDarkMode = false
+    renderFooter()
+    expect(screen.getByRole('button', { name: /switch to dark mode/i })).toBeInTheDocument()
+  })
+})
+
+describe('SidebarFooter — aria-labels', () => {
+  it('button has aria-label "Switch to light mode" when isDarkMode=true', () => {
+    mockIsDarkMode = true
+    renderFooter()
+    const btn = screen.getByRole('button', { name: 'Switch to light mode' })
+    expect(btn).toBeInTheDocument()
+  })
+
+  it('button has aria-label "Switch to dark mode" when isDarkMode=false', () => {
+    mockIsDarkMode = false
+    renderFooter()
+    const btn = screen.getByRole('button', { name: 'Switch to dark mode' })
+    expect(btn).toBeInTheDocument()
+  })
+})
+
+describe('SidebarFooter — toggleTheme interaction', () => {
+  it('clicking the theme button calls toggleTheme()', async () => {
+    mockIsDarkMode = true
+    renderFooter()
+    const btn = screen.getByRole('button', { name: /switch to light mode/i })
+    await userEvent.click(btn)
+    expect(mockToggleTheme).toHaveBeenCalledOnce()
+  })
+})
+
+describe('SidebarFooter — collapsed/expanded label', () => {
+  it('shows no text label when isSidebarCollapsed=true', () => {
+    mockIsDarkMode = true
     mockIsSidebarCollapsed = true
+    renderFooter()
+    expect(screen.queryByText('Dark')).not.toBeInTheDocument()
+    expect(screen.queryByText('Light')).not.toBeInTheDocument()
+  })
 
-    render(<SidebarFooter />)
+  it('shows text label "Dark" when isSidebarCollapsed=false and isDarkMode=true', () => {
+    mockIsDarkMode = true
+    mockIsSidebarCollapsed = false
+    renderFooter()
+    expect(screen.getByText('Dark')).toBeInTheDocument()
+  })
 
-    expect(screen.queryByText('Deepak Joshi')).not.toBeInTheDocument()
-    expect(screen.queryByText('deepak@firm.in')).not.toBeInTheDocument()
+  it('shows text label "Light" when isSidebarCollapsed=false and isDarkMode=false', () => {
+    mockIsDarkMode = false
+    mockIsSidebarCollapsed = false
+    renderFooter()
+    expect(screen.getByText('Light')).toBeInTheDocument()
   })
 })

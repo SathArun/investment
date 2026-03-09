@@ -18,8 +18,8 @@ export function AllocationPie({ allocation }: AllocationPieProps) {
   }))
 
   return (
-    <div className="bg-white rounded-lg border p-4">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">Recommended Allocation</h3>
+    <div className="bg-card rounded-lg border border-border p-4">
+      <h3 className="text-sm font-semibold text-foreground mb-3">Recommended Allocation</h3>
       <ResponsiveContainer width="100%" height={260}>
         <PieChart>
           <Pie

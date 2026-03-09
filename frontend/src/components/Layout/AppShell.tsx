@@ -10,7 +10,7 @@ export function AppShell({ sidebar, children }: AppShellProps) {
   const isSidebarCollapsed = useUIStore((s) => s.isSidebarCollapsed)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-background">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:p-2 focus:bg-white focus:text-blue-700 focus:rounded"
@@ -20,7 +20,7 @@ export function AppShell({ sidebar, children }: AppShellProps) {
       <aside
         aria-label="Application sidebar"
         className={cn(
-          'bg-gray-900 flex flex-col shrink-0 transition-[width] duration-300 ease-in-out',
+          'bg-gray-900 flex flex-col shrink-0 transition-[width] duration-300 ease-in-out border-r border-border',
           isSidebarCollapsed ? 'w-16' : 'w-60'
         )}
       >

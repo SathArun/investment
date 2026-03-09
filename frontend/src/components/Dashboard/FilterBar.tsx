@@ -1,4 +1,10 @@
-import * as Select from '@radix-ui/react-select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useFilterStore } from '@/store/filterStore'
 import { useDashboardStore } from '@/store/dashboardStore'
 import type { TaxBracket, TimeHorizon, RiskFilter } from '@/types/product'
@@ -18,28 +24,19 @@ interface SimpleSelectProps {
 function SimpleSelect({ label, value, options, onValueChange }: SimpleSelectProps) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-xs font-medium text-gray-600">{label}</label>
-      <Select.Root value={value} onValueChange={onValueChange}>
-        <Select.Trigger className="inline-flex items-center justify-between gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]">
-          <Select.Value />
-          <Select.Icon className="text-gray-400">▾</Select.Icon>
-        </Select.Trigger>
-        <Select.Portal>
-          <Select.Content className="z-50 overflow-hidden rounded border border-gray-200 bg-white shadow-lg">
-            <Select.Viewport className="p-1">
-              {options.map((opt) => (
-                <Select.Item
-                  key={opt.value}
-                  value={opt.value}
-                  className="flex cursor-pointer items-center rounded px-3 py-2 text-sm outline-none hover:bg-blue-50 data-[highlighted]:bg-blue-50"
-                >
-                  <Select.ItemText>{opt.label}</Select.ItemText>
-                </Select.Item>
-              ))}
-            </Select.Viewport>
-          </Select.Content>
-        </Select.Portal>
-      </Select.Root>
+      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <Select value={value} onValueChange={onValueChange}>
+        <SelectTrigger className="min-w-[160px]">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }
@@ -111,7 +108,7 @@ export function FilterBar() {
         />
       </div>
       {taxBracket > 0 && (
-        <div className="rounded bg-blue-50 px-3 py-2 text-sm text-blue-700">
+        <div className="rounded bg-primary/10 px-3 py-2 text-sm text-primary">
           Post-tax returns shown — FY2025-26 tax rules
         </div>
       )}
