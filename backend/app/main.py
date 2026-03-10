@@ -16,6 +16,14 @@ from app.admin.router import router as admin_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Seed reference tables on startup (idempotent — skips rows that already exist)
+    from app.db.base import SessionLocal
+    from app.db.seed import seed_asset_classes, seed_tax_rules, seed_test_advisor
+    with SessionLocal() as _session:
+        seed_asset_classes(_session)
+        seed_tax_rules(_session)
+        seed_test_advisor(_session)
+
     from app.jobs.scheduler import start, stop
     start()
     try:

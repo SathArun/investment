@@ -72,42 +72,52 @@ def parse_amfi_nav(raw_text: str) -> Iterator[dict]:
 
 def upsert_nav_history(records: list[dict], session) -> tuple[int, int]:
     """
-    Insert NAV records. Skip duplicates (idempotent via PK).
+    Insert NAV records. Auto-creates MutualFund catalog entries for unknown scheme codes,
+    then inserts nav_history. Skip duplicates (idempotent via PK).
     Returns (inserted, skipped).
     """
     inserted = 0
     skipped = 0
+    new_funds = 0
 
-    # First, get all known scheme_codes from mutual_funds
+    # Fetch all known scheme_codes upfront
     known_codes = {r[0] for r in session.query(MutualFund.scheme_code).all()}
 
     for record in records:
         scheme_code = record["scheme_code"]
-        # Only insert nav_history for known funds (FK constraint)
-        if scheme_code not in known_codes:
-            skipped += 1
-            continue
 
-        # Check if already exists (PK: scheme_code + nav_date)
+        # Auto-create MutualFund record so FK constraint is satisfied
+        if scheme_code not in known_codes:
+            session.add(MutualFund(
+                scheme_code=scheme_code,
+                scheme_name=record["scheme_name"],
+                is_active=True,
+            ))
+            known_codes.add(scheme_code)
+            new_funds += 1
+            if new_funds % 500 == 0:
+                session.commit()
+                logger.info("amfi_new_funds_progress", new_funds=new_funds)
+
+        # Skip if NAV for this date already exists (PK: scheme_code + nav_date)
         existing = session.get(NavHistory, (scheme_code, record["nav_date"]))
         if existing is not None:
             skipped += 1
             continue
 
-        nav_row = NavHistory(
+        session.add(NavHistory(
             scheme_code=scheme_code,
             nav_date=record["nav_date"],
             nav=record["nav"],
-        )
-        session.add(nav_row)
+        ))
         inserted += 1
 
-        # Commit in batches
         if inserted % 500 == 0:
             session.commit()
             logger.info("amfi_upsert_progress", inserted=inserted)
 
     session.commit()
+    logger.info("amfi_upsert_done", new_funds=new_funds, inserted=inserted, skipped=skipped)
     return inserted, skipped
 
 
