@@ -75,18 +75,16 @@ def upsert_nav_history(records: list[dict], session) -> tuple[int, int]:
     Insert NAV records. Auto-creates MutualFund catalog entries for unknown scheme codes,
     then inserts nav_history. Skip duplicates (idempotent via PK).
     Returns (inserted, skipped).
+
+    Two-pass approach required because session uses autoflush=False:
+      Pass 1 — create missing MutualFund rows and flush so the FK exists in the DB.
+      Pass 2 — insert NavHistory rows (FK now satisfied).
     """
-    inserted = 0
-    skipped = 0
-    new_funds = 0
-
-    # Fetch all known scheme_codes upfront
+    # Pass 1: ensure every scheme_code has a MutualFund catalog row
     known_codes = {r[0] for r in session.query(MutualFund.scheme_code).all()}
-
+    new_funds = 0
     for record in records:
         scheme_code = record["scheme_code"]
-
-        # Auto-create MutualFund record so FK constraint is satisfied
         if scheme_code not in known_codes:
             session.add(MutualFund(
                 scheme_code=scheme_code,
@@ -95,23 +93,25 @@ def upsert_nav_history(records: list[dict], session) -> tuple[int, int]:
             ))
             known_codes.add(scheme_code)
             new_funds += 1
-            if new_funds % 500 == 0:
-                session.commit()
-                logger.info("amfi_new_funds_progress", new_funds=new_funds)
 
-        # Skip if NAV for this date already exists (PK: scheme_code + nav_date)
-        existing = session.get(NavHistory, (scheme_code, record["nav_date"]))
+    if new_funds:
+        session.flush()  # Push MutualFund rows to DB before NavHistory FK check
+        logger.info("amfi_new_funds_flushed", new_funds=new_funds)
+
+    # Pass 2: insert NAV history rows
+    inserted = 0
+    skipped = 0
+    for record in records:
+        existing = session.get(NavHistory, (record["scheme_code"], record["nav_date"]))
         if existing is not None:
             skipped += 1
             continue
-
         session.add(NavHistory(
-            scheme_code=scheme_code,
+            scheme_code=record["scheme_code"],
             nav_date=record["nav_date"],
             nav=record["nav"],
         ))
         inserted += 1
-
         if inserted % 500 == 0:
             session.commit()
             logger.info("amfi_upsert_progress", inserted=inserted)

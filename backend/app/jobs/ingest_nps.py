@@ -172,9 +172,17 @@ def upsert_nps_returns(records: list[dict], session) -> tuple[int, int]:
 
 
 def fetch_nps_html() -> str:
-    """Fetch NPSTRUST returns HTML page."""
+    """
+    Fetch NPSTRUST performance page.
+
+    NOTE: The NPS Trust website migrated to a JavaScript-rendered Highcharts page
+    at /weekly-snapshot-nps-schemes. The underlying data API requires Drupal node IDs
+    that are only available after JS execution. As a result, BeautifulSoup parsing
+    will return 0 records until a headless-browser solution is implemented.
+    NPS NAV data is available via AMFI (ingest_amfi) for funds registered there.
+    """
     import requests
-    url = "https://www.npstrust.org.in/content/performance-nps-scheme"
+    url = "https://www.npstrust.org.in/weekly-snapshot-nps-schemes"
     try:
         resp = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
         resp.raise_for_status()
