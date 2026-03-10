@@ -70,26 +70,26 @@ export function ScoreBreakdown() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/40 z-40" />
         <Dialog.Content
-          className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 flex flex-col overflow-y-auto"
+          className="fixed right-0 top-0 h-full w-full max-w-md bg-card shadow-2xl z-50 flex flex-col overflow-y-auto"
           aria-describedby="score-breakdown-description"
         >
           {selectedProduct && (
             <>
               {/* Header */}
-              <div className="flex items-start justify-between p-6 border-b border-gray-200">
+              <div className="flex items-start justify-between p-6 border-b border-border">
                 <div className="flex-1 pr-4">
-                  <Dialog.Title className="text-lg font-semibold text-gray-900 leading-tight">
+                  <Dialog.Title className="text-lg font-semibold text-foreground leading-tight">
                     {selectedProduct.name}
                   </Dialog.Title>
                   <p
                     id="score-breakdown-description"
-                    className="text-sm text-gray-500 mt-1"
+                    className="text-sm text-muted-foreground mt-1"
                   >
                     Score breakdown — {selectedProduct.asset_class}
                   </p>
                 </div>
                 <Dialog.Close
-                  className="flex-shrink-0 rounded-md p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="flex-shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   aria-label="Close panel"
                 >
                   <svg
@@ -109,14 +109,14 @@ export function ScoreBreakdown() {
               </div>
 
               {/* Composite Score */}
-              <div className="px-6 py-5 bg-gray-50 border-b border-gray-200">
+              <div className="px-6 py-5 bg-muted border-b border-border">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-600">Advisor Score</span>
-                  <span className="text-3xl font-bold text-gray-900">
+                  <span className="text-sm font-medium text-muted-foreground">Advisor Score</span>
+                  <span className="text-3xl font-bold text-foreground">
                     {selectedProduct.advisor_score.toFixed(1)}
                   </span>
                 </div>
-                <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${getScoreColor(selectedProduct.advisor_score)}`}
                     style={{ width: `${selectedProduct.advisor_score}%` }}
@@ -126,7 +126,7 @@ export function ScoreBreakdown() {
 
               {/* Sub-scores */}
               <div className="flex-1 px-6 py-4 space-y-5">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Sub-Score Breakdown
                 </h3>
                 {SUB_SCORE_KEYS.map((key) => {
@@ -136,14 +136,14 @@ export function ScoreBreakdown() {
                     <div key={key}>
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex-1">
-                          <span className="text-sm font-medium text-gray-800">{info.title}</span>
-                          <span className="ml-2 text-xs text-gray-400">({info.weight}%)</span>
+                          <span className="text-sm font-medium text-foreground">{info.title}</span>
+                          <span className="ml-2 text-xs text-muted-foreground">({info.weight}%)</span>
                         </div>
-                        <span className="text-sm font-semibold text-gray-700 ml-2">
+                        <span className="text-sm font-semibold text-foreground ml-2">
                           {score.toFixed(0)}
                         </span>
                       </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${getScoreColor(score)}`}
                           style={{ width: `${score}%` }}
@@ -154,7 +154,7 @@ export function ScoreBreakdown() {
                           aria-label={info.title}
                         />
                       </div>
-                      <p className="mt-1 text-xs text-gray-400">{info.description}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{info.description}</p>
                     </div>
                   )
                 })}

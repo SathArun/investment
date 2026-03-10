@@ -82,17 +82,17 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
 
   return (
     <Tooltip.Provider delayDuration={200}>
-      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+      <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+          <thead className="bg-muted text-xs uppercase text-muted-foreground">
             <tr>
               <th className="px-3 py-3 text-center font-medium">Pin</th>
               {visibleColumns.map((col) => (
                 <th
                   key={col.key}
                   onClick={() => handleHeaderClick(col.key)}
-                  className={`cursor-pointer select-none px-4 py-3 text-left font-medium hover:bg-gray-100 ${
-                    col.highlight ? 'bg-blue-50 text-blue-700' : ''
+                  className={`cursor-pointer select-none px-4 py-3 text-left font-medium hover:bg-muted ${
+                    col.highlight ? 'bg-primary/10 text-primary' : ''
                   } ${sortBy === col.key ? 'text-blue-600' : ''}`}
                 >
                   {col.label}
@@ -104,7 +104,7 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 bg-white">
+          <tbody className="divide-y divide-border bg-card">
             {isLoading && products.length === 0 ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={`skeleton-${i}`}>
@@ -123,7 +123,7 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
               <tr>
                 <td
                   colSpan={visibleColumns.length + (isClientView ? 1 : 2)}
-                  className="px-4 py-8 text-center text-gray-400"
+                  className="px-4 py-8 text-center text-muted-foreground"
                 >
                   No products available
                 </td>
@@ -133,8 +133,8 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
                 <Tooltip.Root key={product.id}>
                   <Tooltip.Trigger asChild>
                     <tr
-                      className={`transition-colors hover:bg-gray-50 ${
-                        pinnedProducts.has(product.id) ? 'bg-yellow-50' : ''
+                      className={`transition-colors hover:bg-muted/50 ${
+                        pinnedProducts.has(product.id) ? 'bg-yellow-500/10' : ''
                       }`}
                     >
                       <td className="px-3 py-3 text-center">
@@ -144,7 +144,7 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
                           className={`text-lg leading-none transition-colors ${
                             pinnedProducts.has(product.id)
                               ? 'text-yellow-500'
-                              : 'text-gray-300 hover:text-yellow-400'
+                              : 'text-muted-foreground hover:text-yellow-400'
                           }`}
                         >
                           {pinnedProducts.has(product.id) ? '★' : '☆'}
@@ -154,7 +154,7 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
                         switch (col.key) {
                           case 'name':
                             return (
-                              <td key="name" className="px-4 py-3 font-medium text-gray-900">
+                              <td key="name" className="px-4 py-3 font-medium text-foreground">
                                 {product.name}
                               </td>
                             )
@@ -168,7 +168,7 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
                                     )}`}
                                     aria-hidden="true"
                                   />
-                                  <span className="text-gray-700">
+                                  <span className="text-muted-foreground">
                                     {getRiskLabel(product.sebi_risk_level)}
                                   </span>
                                 </div>
@@ -176,31 +176,31 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
                             )
                           case 'cagr_1y':
                             return (
-                              <td key="cagr_1y" className="px-4 py-3 text-gray-700">
+                              <td key="cagr_1y" className="px-4 py-3 text-muted-foreground">
                                 {formatPct(product.cagr_1y)}
                               </td>
                             )
                           case 'cagr_3y':
                             return (
-                              <td key="cagr_3y" className="px-4 py-3 text-gray-700">
+                              <td key="cagr_3y" className="px-4 py-3 text-muted-foreground">
                                 {formatPct(product.cagr_3y)}
                               </td>
                             )
                           case 'cagr_5y':
                             return (
-                              <td key="cagr_5y" className="px-4 py-3 text-gray-700">
+                              <td key="cagr_5y" className="px-4 py-3 text-muted-foreground">
                                 {formatPct(product.cagr_5y)}
                               </td>
                             )
                           case 'post_tax_return_3y':
                             return (
-                              <td key="post_tax_return_3y" className="bg-blue-50 px-4 py-3 font-semibold text-blue-800">
+                              <td key="post_tax_return_3y" className="bg-primary/10 px-4 py-3 font-semibold text-primary">
                                 {formatPct(product.post_tax_return_3y)}
                               </td>
                             )
                           case 'advisor_score':
                             return (
-                              <td key="advisor_score" className="px-4 py-3 text-gray-700">
+                              <td key="advisor_score" className="px-4 py-3 text-muted-foreground">
                                 {Math.round(product.advisor_score)}
                               </td>
                             )
@@ -224,36 +224,36 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
                   <Tooltip.Portal>
                     <Tooltip.Content
                       side="top"
-                      className="z-50 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-xl text-sm"
+                      className="z-50 rounded-lg border border-border bg-card px-4 py-3 shadow-xl text-sm"
                       sideOffset={4}
                     >
                       <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                        <span className="text-gray-500">10Y CAGR</span>
-                        <span className="font-medium text-gray-800">
+                        <span className="text-muted-foreground">10Y CAGR</span>
+                        <span className="font-medium text-foreground">
                           {formatPct(product.cagr_10y)}
                         </span>
-                        <span className="text-gray-500">Std Dev</span>
-                        <span className="font-medium text-gray-800">
+                        <span className="text-muted-foreground">Std Dev</span>
+                        <span className="font-medium text-foreground">
                           {formatPct(product.std_dev_3y)}
                         </span>
-                        <span className="text-gray-500">Max Drawdown</span>
-                        <span className="font-medium text-gray-800">
+                        <span className="text-muted-foreground">Max Drawdown</span>
+                        <span className="font-medium text-foreground">
                           {formatPct(product.max_drawdown_5y)}
                         </span>
-                        <span className="text-gray-500">Expense Ratio</span>
-                        <span className="font-medium text-gray-800">
+                        <span className="text-muted-foreground">Expense Ratio</span>
+                        <span className="font-medium text-foreground">
                           {formatPct(product.expense_ratio)}
                         </span>
-                        <span className="text-gray-500">Min Investment</span>
-                        <span className="font-medium text-gray-800">
+                        <span className="text-muted-foreground">Min Investment</span>
+                        <span className="font-medium text-foreground">
                           {formatCurrency(product.min_investment_inr)}
                         </span>
-                        <span className="text-gray-500">Liquidity</span>
-                        <span className="font-medium text-gray-800">
+                        <span className="text-muted-foreground">Liquidity</span>
+                        <span className="font-medium text-foreground">
                           {product.liquidity_label ?? '—'}
                         </span>
                       </div>
-                      <Tooltip.Arrow className="fill-white" />
+                      <Tooltip.Arrow style={{ fill: 'hsl(var(--card))' }} />
                     </Tooltip.Content>
                   </Tooltip.Portal>
                 </Tooltip.Root>

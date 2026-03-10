@@ -6,9 +6,12 @@ interface UIState {
   setSelectedProduct: (product: ProductRow | null) => void
   isClientView: boolean
   setClientView: (v: boolean) => void
+  toggleClientView: () => void
   isSidebarCollapsed: boolean
   toggleSidebar: () => void
   setSidebarCollapsed: (v: boolean) => void
+  isDarkMode: boolean
+  toggleTheme: () => void
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -16,6 +19,7 @@ export const useUIStore = create<UIState>((set) => ({
   setSelectedProduct: (selectedProduct) => set({ selectedProduct }),
   isClientView: false,
   setClientView: (isClientView) => set({ isClientView }),
+  toggleClientView: () => set((state) => ({ isClientView: !state.isClientView })),
   isSidebarCollapsed: typeof window !== 'undefined' && localStorage.getItem('sidebar_collapsed') === 'true',
   toggleSidebar: () => set((state) => {
     const next = !state.isSidebarCollapsed
@@ -26,4 +30,12 @@ export const useUIStore = create<UIState>((set) => ({
     localStorage.setItem('sidebar_collapsed', String(v))
     set({ isSidebarCollapsed: v })
   },
+  isDarkMode: typeof window !== 'undefined'
+    ? localStorage.getItem('theme') !== 'light'  // defaults to dark
+    : true,
+  toggleTheme: () => set((state) => {
+    const next = !state.isDarkMode
+    localStorage.setItem('theme', next ? 'dark' : 'light')
+    return { isDarkMode: next }
+  }),
 }))

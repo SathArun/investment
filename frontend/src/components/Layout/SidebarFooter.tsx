@@ -1,4 +1,4 @@
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Moon, Sun } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { useDashboardStore } from '@/store/dashboardStore'
@@ -10,6 +10,8 @@ export function SidebarFooter() {
   const logout = useAuthStore((s) => s.logout)
   const dataFreshness = useDashboardStore((s) => s.dataFreshness)
   const isSidebarCollapsed = useUIStore((s) => s.isSidebarCollapsed)
+  const isDarkMode = useUIStore((s) => s.isDarkMode)
+  const toggleTheme = useUIStore((s) => s.toggleTheme)
   const navigate = useNavigate()
 
   const advisorName = advisor?.name ?? 'Advisor'
@@ -19,6 +21,22 @@ export function SidebarFooter() {
       {!isSidebarCollapsed && dataFreshness && (
         <DataFreshnessBar freshness={dataFreshness} />
       )}
+
+      {/* Theme toggle */}
+      <button
+        onClick={toggleTheme}
+        aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+        className="flex items-center gap-2 text-gray-400 hover:text-gray-100 transition-colors w-full"
+      >
+        {isDarkMode
+          ? <Moon className="w-4 h-4 shrink-0" aria-hidden="true" />
+          : <Sun className="w-4 h-4 shrink-0" aria-hidden="true" />
+        }
+        {!isSidebarCollapsed && (
+          <span className="text-xs">{isDarkMode ? 'Dark' : 'Light'}</span>
+        )}
+      </button>
+
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <User className="w-4 h-4 text-gray-400 shrink-0" />

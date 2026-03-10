@@ -52,11 +52,11 @@ export function CorpusChart({
   }, [corpusData, previewSeries, years])
 
   return (
-    <div className="bg-white rounded-lg border p-4 space-y-4">
+    <div className="bg-card rounded-lg border border-border p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700">Corpus Projection</h3>
+        <h3 className="text-sm font-semibold text-foreground">Corpus Projection</h3>
         <div className="flex items-center gap-3 text-sm">
-          <label htmlFor="stepup-slider" className="text-gray-600 whitespace-nowrap">
+          <label htmlFor="stepup-slider" className="text-muted-foreground whitespace-nowrap">
             Step-Up Preview: {previewStepup}%
           </label>
           <input
@@ -92,15 +92,15 @@ export function CorpusChart({
               <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="year"
             tickFormatter={(v: number) => `Yr ${v}`}
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
           />
           <YAxis
             tickFormatter={(v: number) => formatCurrency(v)}
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
             width={80}
           />
           <Tooltip

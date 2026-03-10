@@ -49,7 +49,7 @@ function CustomTooltip({ active, payload, isClientView }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   const point = payload[0].payload
   return (
-    <div className="bg-white border border-gray-200 rounded p-3 shadow text-sm">
+    <div className="bg-card border border-border rounded p-3 shadow text-sm text-foreground">
       <p className="font-semibold">{point.name}</p>
       <p>{isClientView ? 'Risk Level' : 'Risk (Std Dev)'}: {point.x.toFixed(2)}%</p>
       <p>{isClientView ? 'Annual Return' : 'Post-Tax 3Y'}: {point.y.toFixed(2)}%</p>
@@ -89,24 +89,26 @@ export function RiskReturnPlot() {
   const assetClasses = Object.keys(groupedByClass)
 
   return (
-    <div className="bg-white rounded-lg border p-4">
-      <h3 className="font-semibold text-gray-700 mb-3">Risk vs Return</h3>
+    <div className="bg-card rounded-lg border border-border p-4">
+      <h3 className="font-semibold text-muted-foreground mb-3">Risk vs Return</h3>
       <ResponsiveContainer width="100%" height={350}>
         <ScatterChart margin={{ top: 10, right: 30, bottom: 20, left: 20 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="x"
             type="number"
             name={xLabel}
-            label={{ value: xLabel, position: 'insideBottom', offset: -10 }}
+            label={{ value: xLabel, position: 'insideBottom', offset: -10, fill: 'hsl(var(--muted-foreground))' }}
             domain={['auto', 'auto']}
+            tick={{ fill: 'hsl(var(--muted-foreground))' }}
           />
           <YAxis
             dataKey="y"
             type="number"
             name={yLabel}
-            label={{ value: yLabel, angle: -90, position: 'insideLeft' }}
+            label={{ value: yLabel, angle: -90, position: 'insideLeft', fill: 'hsl(var(--muted-foreground))' }}
             domain={['auto', 'auto']}
+            tick={{ fill: 'hsl(var(--muted-foreground))' }}
           />
           <RechartsTooltip content={<CustomTooltip isClientView={isClientView} />} />
           {!isClientView && <Legend verticalAlign="top" />}

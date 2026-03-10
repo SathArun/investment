@@ -62,14 +62,15 @@ export function GoalForm() {
   const watchedValues = watch()
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg border p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-800">Create Goal</h2>
+    <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+      {/* Left column: the form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-card rounded-lg border border-border p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Create Goal</h2>
 
         {/* Client */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label htmlFor="client_id" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="client_id" className="block text-sm font-medium text-foreground">
               Client
             </label>
             <button
@@ -81,12 +82,12 @@ export function GoalForm() {
             </button>
           </div>
           {isLoadingClients ? (
-            <p className="text-sm text-gray-500">Loading clients...</p>
+            <p className="text-sm text-muted-foreground">Loading clients...</p>
           ) : (
             <select
               id="client_id"
               {...register('client_id', { required: 'Client is required' })}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a client</option>
               {clients.map((c) => (
@@ -100,14 +101,14 @@ export function GoalForm() {
             <p className="text-xs text-red-600 mt-1">{errors.client_id.message}</p>
           )}
           {showAddClient && (
-            <div className="mt-2 p-3 border border-blue-200 rounded-md bg-blue-50 space-y-2">
-              <p className="text-xs font-semibold text-blue-700">New Client</p>
+            <div className="mt-2 p-3 border border-primary/30 rounded-md bg-primary/10 space-y-2">
+              <p className="text-xs font-semibold text-primary dark:text-blue-400">New Client</p>
               <input
                 type="text"
                 placeholder="Full name *"
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
-                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-border rounded px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div className="flex gap-2">
                 <input
@@ -117,12 +118,12 @@ export function GoalForm() {
                   max={120}
                   value={newClientAge}
                   onChange={(e) => setNewClientAge(e.target.value)}
-                  className="w-1/2 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-1/2 border border-border rounded px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <select
                   value={newClientTax}
                   onChange={(e) => setNewClientTax(e.target.value)}
-                  className="w-1/2 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-1/2 border border-border rounded px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="0">0% Tax</option>
                   <option value="0.05">5% Tax</option>
@@ -145,7 +146,7 @@ export function GoalForm() {
 
         {/* Goal Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
             Goal Name
           </label>
           <input
@@ -153,7 +154,7 @@ export function GoalForm() {
             type="text"
             placeholder="e.g. Retirement, Child Education"
             {...register('name', { required: 'Goal name is required' })}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {errors.name && (
             <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>
@@ -162,7 +163,7 @@ export function GoalForm() {
 
         {/* Target Amount */}
         <div>
-          <label htmlFor="target_amount_inr" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="target_amount_inr" className="block text-sm font-medium text-foreground mb-1">
             Target Amount (₹)
           </label>
           <input
@@ -174,7 +175,7 @@ export function GoalForm() {
               required: 'Target amount is required',
               min: { value: 1, message: 'Must be greater than 0' },
             })}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {errors.target_amount_inr && (
             <p className="text-xs text-red-600 mt-1">{errors.target_amount_inr.message}</p>
@@ -183,14 +184,14 @@ export function GoalForm() {
 
         {/* Target Date */}
         <div>
-          <label htmlFor="target_date" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="target_date" className="block text-sm font-medium text-foreground mb-1">
             Target Date
           </label>
           <input
             id="target_date"
             type="date"
             {...register('target_date', { required: 'Target date is required' })}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {errors.target_date && (
             <p className="text-xs text-red-600 mt-1">{errors.target_date.message}</p>
@@ -199,7 +200,7 @@ export function GoalForm() {
 
         {/* Current Corpus */}
         <div>
-          <label htmlFor="current_corpus_inr" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="current_corpus_inr" className="block text-sm font-medium text-foreground mb-1">
             Current Corpus (₹)
           </label>
           <input
@@ -207,7 +208,7 @@ export function GoalForm() {
             type="number"
             min={0}
             {...register('current_corpus_inr', { required: 'Current corpus is required', min: 0 })}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {errors.current_corpus_inr && (
             <p className="text-xs text-red-600 mt-1">{errors.current_corpus_inr.message}</p>
@@ -216,7 +217,7 @@ export function GoalForm() {
 
         {/* Monthly SIP */}
         <div>
-          <label htmlFor="monthly_sip_inr" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="monthly_sip_inr" className="block text-sm font-medium text-foreground mb-1">
             Monthly SIP (₹)
           </label>
           <input
@@ -228,7 +229,7 @@ export function GoalForm() {
               required: 'Monthly SIP is required',
               min: { value: 1, message: 'Must be greater than 0' },
             })}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {errors.monthly_sip_inr && (
             <p className="text-xs text-red-600 mt-1">{errors.monthly_sip_inr.message}</p>
@@ -237,7 +238,7 @@ export function GoalForm() {
 
         {/* Annual Step-Up % */}
         <div>
-          <label htmlFor="annual_stepup_pct" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="annual_stepup_pct" className="block text-sm font-medium text-foreground mb-1">
             Annual Step-Up %
           </label>
           <input
@@ -251,7 +252,7 @@ export function GoalForm() {
               min: 0,
               max: 30,
             })}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {errors.annual_stepup_pct && (
             <p className="text-xs text-red-600 mt-1">{errors.annual_stepup_pct.message}</p>
@@ -260,7 +261,7 @@ export function GoalForm() {
 
         {/* Inflation Rate % */}
         <div>
-          <label htmlFor="inflation_rate" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="inflation_rate" className="block text-sm font-medium text-foreground mb-1">
             Inflation Rate %
           </label>
           <input
@@ -274,7 +275,7 @@ export function GoalForm() {
               min: 0,
               max: 20,
             })}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {errors.inflation_rate && (
             <p className="text-xs text-red-600 mt-1">{errors.inflation_rate.message}</p>
@@ -290,65 +291,69 @@ export function GoalForm() {
         </button>
       </form>
 
-      {isLoadingPlan && (
-        <div className="space-y-4">
-          {/* Summary cards skeleton */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-[88px] rounded-lg motion-reduce:animate-none" />
-            ))}
+      {/* Right column: results */}
+      <div className="space-y-6 mt-6 lg:mt-0">
+        {/* Loading skeleton */}
+        {isLoadingPlan && (
+          <div className="space-y-4">
+            {/* Summary cards skeleton */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-[88px] rounded-lg motion-reduce:animate-none" />
+              ))}
+            </div>
+            {/* Corpus chart skeleton */}
+            <Skeleton className="h-[200px] w-full rounded-lg motion-reduce:animate-none" />
+            {/* Allocation pie skeleton */}
+            <Skeleton className="h-[200px] w-full rounded-lg motion-reduce:animate-none" />
           </div>
-          {/* Corpus chart skeleton */}
-          <Skeleton className="h-[200px] w-full rounded-lg motion-reduce:animate-none" />
-          {/* Allocation pie skeleton */}
-          <Skeleton className="h-[200px] w-full rounded-lg motion-reduce:animate-none" />
-        </div>
-      )}
+        )}
 
-      {/* Plan results */}
-      {currentPlan && !isLoadingPlan && (
-        <div className="space-y-6">
-          {/* Summary cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white rounded-lg border p-4">
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Inflation-Adj. Target</p>
-              <p className="text-xl font-bold text-gray-900 mt-1">
-                {formatCurrency(currentPlan.inflation_adjusted_target)}
-              </p>
+        {/* Plan results */}
+        {currentPlan && !isLoadingPlan && (
+          <div className="space-y-6">
+            {/* Summary cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-card rounded-lg border border-border p-4">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Inflation-Adj. Target</p>
+                <p className="text-xl font-bold text-foreground mt-1">
+                  {formatCurrency(currentPlan.inflation_adjusted_target)}
+                </p>
+              </div>
+              <div className="bg-card rounded-lg border border-border p-4">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Required SIP</p>
+                <p className="text-xl font-bold text-foreground mt-1">
+                  {formatCurrency(currentPlan.required_sip)}/mo
+                </p>
+              </div>
+              <div className="bg-card rounded-lg border border-border p-4">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Goal Probability</p>
+                <p className="text-xl font-bold text-foreground mt-1">
+                  {formatPct(currentPlan.goal_probability)}
+                </p>
+              </div>
             </div>
-            <div className="bg-white rounded-lg border p-4">
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Required SIP</p>
-              <p className="text-xl font-bold text-gray-900 mt-1">
-                {formatCurrency(currentPlan.required_sip)}/mo
-              </p>
-            </div>
-            <div className="bg-white rounded-lg border p-4">
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Goal Probability</p>
-              <p className="text-xl font-bold text-gray-900 mt-1">
-                {formatPct(currentPlan.goal_probability)}
-              </p>
-            </div>
+
+            {/* NPS Banner */}
+            {currentPlan.nps_highlight && (
+              <div className="bg-primary/10 border border-primary/30 rounded p-3 text-sm text-primary dark:text-blue-400">
+                NPS Tier 1 recommended — qualifies for additional ₹50,000 deduction under 80CCD(1B)
+              </div>
+            )}
+
+            {/* Corpus Chart */}
+            <CorpusChart
+              corpusData={currentPlan.corpus_projection}
+              currentCorpus={Number(watchedValues.current_corpus_inr) || 0}
+              monthlySip={Number(watchedValues.monthly_sip_inr) || 0}
+              annualStepup={Number(watchedValues.annual_stepup_pct) || 0}
+            />
+
+            {/* Allocation Pie */}
+            <AllocationPie allocation={currentPlan.recommended_allocation} />
           </div>
-
-          {/* NPS Banner */}
-          {currentPlan.nps_highlight && (
-            <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
-              💡 NPS Tier 1 recommended — qualifies for additional ₹50,000 deduction under 80CCD(1B)
-            </div>
-          )}
-
-          {/* Corpus Chart */}
-          <CorpusChart
-            corpusData={currentPlan.corpus_projection}
-            currentCorpus={Number(watchedValues.current_corpus_inr) || 0}
-            monthlySip={Number(watchedValues.monthly_sip_inr) || 0}
-            annualStepup={Number(watchedValues.annual_stepup_pct) || 0}
-          />
-
-          {/* Allocation Pie */}
-          <AllocationPie allocation={currentPlan.recommended_allocation} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
