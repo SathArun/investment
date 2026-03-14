@@ -64,6 +64,24 @@ def _prune(db, job_name: str) -> None:
     db.commit()
 
 
+def mark_stale_running_jobs() -> int:
+    """
+    On server startup, any job_runs still in 'running' status were interrupted
+    by a process restart. Mark them as 'interrupted' so the UI doesn't show
+    a forever-running job.
+    Returns the number of rows updated.
+    """
+    with SessionLocal() as db:
+        stale = db.query(JobRun).filter(JobRun.status == "running").all()
+        now = datetime.utcnow()
+        for run in stale:
+            run.status = "interrupted"
+            run.finished_at = now
+            run.error_msg = "Server restarted before job finished"
+        db.commit()
+        return len(stale)
+
+
 def get_job_history() -> list[dict]:
     """Return last 10 runs for each known job, plus summary fields."""
     result = []

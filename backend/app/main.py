@@ -24,6 +24,12 @@ async def lifespan(app: FastAPI):
         seed_tax_rules(_session)
         seed_test_advisor(_session)
 
+    from app.admin.service import mark_stale_running_jobs
+    stale = mark_stale_running_jobs()
+    if stale:
+        import logging
+        logging.getLogger(__name__).warning("Marked %d stale running jobs as interrupted", stale)
+
     from app.jobs.scheduler import start, stop
     start()
     try:
