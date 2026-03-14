@@ -94,19 +94,19 @@ export function StressTest() {
     return (
       <div className="flex items-center justify-center p-12" data-testid="loading-spinner">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
-        <span className="ml-3 text-gray-600">Loading stress test scenarios...</span>
+        <span className="ml-3 text-muted-foreground">Loading stress test scenarios...</span>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg border p-6 space-y-6">
-      <h2 className="text-xl font-semibold text-gray-800">Portfolio Stress Test</h2>
+    <div className="bg-card rounded-lg border p-6 space-y-6">
+      <h2 className="text-xl font-semibold text-foreground">Portfolio Stress Test</h2>
 
       {/* Asset Mix Sliders */}
-      <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+      <div className="bg-muted rounded-lg p-4 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-700">Asset Allocation</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground">Asset Allocation</h3>
           <span
             className={`text-sm font-medium ${allocationValid ? 'text-green-600' : 'text-red-600'}`}
           >
@@ -122,7 +122,7 @@ export function StressTest() {
 
         <div className="space-y-3">
           <div>
-            <label htmlFor="equity-slider" className="flex justify-between text-sm text-gray-600 mb-1">
+            <label htmlFor="equity-slider" className="flex justify-between text-sm text-muted-foreground mb-1">
               <span>Equity</span>
               <span className="font-medium">{equityPct}%</span>
             </label>
@@ -139,7 +139,7 @@ export function StressTest() {
           </div>
 
           <div>
-            <label htmlFor="debt-slider" className="flex justify-between text-sm text-gray-600 mb-1">
+            <label htmlFor="debt-slider" className="flex justify-between text-sm text-muted-foreground mb-1">
               <span>Debt</span>
               <span className="font-medium">{debtPct}%</span>
             </label>
@@ -156,7 +156,7 @@ export function StressTest() {
           </div>
 
           <div>
-            <label htmlFor="gold-slider" className="flex justify-between text-sm text-gray-600 mb-1">
+            <label htmlFor="gold-slider" className="flex justify-between text-sm text-muted-foreground mb-1">
               <span>Gold</span>
               <span className="font-medium">{goldPct}%</span>
             </label>
@@ -207,10 +207,10 @@ export function StressTest() {
 
       {/* Recovery Bar Chart */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Recovery Period by Scenario</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground mb-3">Recovery Period by Scenario</h3>
         <ResponsiveContainer width="100%" height={240}>
           <BarChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
             <YAxis
               label={{ value: 'Months', angle: -90, position: 'insideLeft', offset: 10 }}

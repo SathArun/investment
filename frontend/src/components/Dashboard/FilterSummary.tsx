@@ -26,14 +26,14 @@ export function FilterSummary() {
   const riskLabel = riskFilter ?? '—'
 
   return (
-    <div className="flex items-center gap-3 text-sm text-gray-600">
+    <div className="flex items-center gap-3 text-sm text-muted-foreground">
       <span>
         Filtered:{' '}
-        <span className="font-medium text-gray-800">{taxLabel}</span>
+        <span className="font-medium text-foreground">{taxLabel}</span>
         {' · '}
-        <span className="font-medium text-gray-800">{horizonLabel}</span>
+        <span className="font-medium text-foreground">{horizonLabel}</span>
         {' · '}
-        <span className="font-medium text-gray-800">{riskLabel}</span>
+        <span className="font-medium text-foreground">{riskLabel}</span>
       </span>
       <button
         onClick={() => setClientView(false)}

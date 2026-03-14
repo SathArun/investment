@@ -33,8 +33,8 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null
   return (
-    <div className="bg-white border border-gray-200 rounded p-3 shadow text-sm">
-      <p className="font-semibold text-gray-700 mb-1">Year {label}</p>
+    <div className="bg-card border border-border rounded p-3 shadow text-sm">
+      <p className="font-semibold text-foreground mb-1">Year {label}</p>
       {payload.map((entry) => (
         <p key={entry.name} style={{ color: entry.color }}>
           {entry.name}: {formatCurrency(entry.value)}
@@ -82,13 +82,13 @@ export function SIPModeler() {
   }
 
   return (
-    <div className="bg-white rounded-lg border p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">SIP Modeler</h2>
+    <div className="bg-card rounded-lg border p-6">
+      <h2 className="text-xl font-semibold text-foreground mb-4">SIP Modeler</h2>
 
       {/* Inputs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div>
-          <label htmlFor="monthly-sip" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="monthly-sip" className="block text-sm font-medium text-muted-foreground mb-1">
             Monthly SIP (₹)
           </label>
           <input
@@ -97,12 +97,12 @@ export function SIPModeler() {
             min={500}
             value={monthlySip}
             onChange={(e) => setMonthlySip(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="stepup-pct" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="stepup-pct" className="block text-sm font-medium text-muted-foreground mb-1">
             Annual Step-Up %
           </label>
           <input
@@ -112,12 +112,12 @@ export function SIPModeler() {
             max={30}
             value={stepupPct}
             onChange={(e) => setStepupPct(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="duration" className="block text-sm font-medium text-muted-foreground mb-1">
             Duration (Years)
           </label>
           <input
@@ -127,12 +127,12 @@ export function SIPModeler() {
             max={40}
             value={duration}
             onChange={(e) => setDuration(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="base-return" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="base-return" className="block text-sm font-medium text-muted-foreground mb-1">
             Base Return Rate %
           </label>
           <input
@@ -143,12 +143,12 @@ export function SIPModeler() {
             step={0.1}
             value={baseReturn}
             onChange={(e) => setBaseReturn(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="comp-return" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="comp-return" className="block text-sm font-medium text-muted-foreground mb-1">
             Comparison Return Rate %
           </label>
           <input
@@ -159,39 +159,39 @@ export function SIPModeler() {
             step={0.1}
             value={compReturn}
             onChange={(e) => setCompReturn(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-gray-50 rounded-lg p-4">
-          <p className="text-xs text-gray-500 mb-1">Total Invested</p>
-          <p className="text-lg font-bold text-gray-800" data-testid="total-invested">
+        <div className="bg-muted rounded-lg p-4">
+          <p className="text-xs text-muted-foreground mb-1">Total Invested</p>
+          <p className="text-lg font-bold text-foreground" data-testid="total-invested">
             {formatCurrency(totalInvested)}
           </p>
         </div>
 
-        <div className="bg-blue-50 rounded-lg p-4">
-          <p className="text-xs text-gray-500 mb-1">Projected at {baseReturn}%</p>
-          <p className="text-lg font-bold text-blue-700" data-testid="base-corpus">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+          <p className="text-xs text-muted-foreground mb-1">Projected at {baseReturn}%</p>
+          <p className="text-lg font-bold text-blue-700 dark:text-blue-300" data-testid="base-corpus">
             {formatCurrency(baseCorpus)}
           </p>
-          <p className="text-xs text-blue-500 mt-1">Gains: {formatCurrency(baseGains)}</p>
+          <p className="text-xs text-blue-500 dark:text-blue-400 mt-1">Gains: {formatCurrency(baseGains)}</p>
         </div>
 
-        <div className="bg-orange-50 rounded-lg p-4">
-          <p className="text-xs text-gray-500 mb-1">Projected at {compReturn}%</p>
-          <p className="text-lg font-bold text-orange-700" data-testid="comp-corpus">
+        <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
+          <p className="text-xs text-muted-foreground mb-1">Projected at {compReturn}%</p>
+          <p className="text-lg font-bold text-orange-700 dark:text-orange-300" data-testid="comp-corpus">
             {formatCurrency(compCorpus)}
           </p>
-          <p className="text-xs text-orange-500 mt-1">Gains: {formatCurrency(compGains)}</p>
+          <p className="text-xs text-orange-500 dark:text-orange-400 mt-1">Gains: {formatCurrency(compGains)}</p>
         </div>
 
-        <div className="bg-green-50 rounded-lg p-4">
-          <p className="text-xs text-gray-500 mb-1">Extra gains at {baseReturn}%</p>
-          <p className="text-lg font-bold text-green-700" data-testid="extra-gains">
+        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+          <p className="text-xs text-muted-foreground mb-1">Extra gains at {baseReturn}%</p>
+          <p className="text-lg font-bold text-green-700 dark:text-green-300" data-testid="extra-gains">
             {formatCurrency(extraGains)}
           </p>
         </div>
@@ -200,7 +200,7 @@ export function SIPModeler() {
       {/* Chart */}
       <ResponsiveContainer width="100%" height={320}>
         <LineChart data={chartData} margin={{ top: 8, right: 16, left: 16, bottom: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis
             dataKey="year"
             label={{ value: 'Year', position: 'insideBottomRight', offset: -8 }}

@@ -11,17 +11,17 @@ interface JobCardProps {
 function StatusBadge({ status }: { status: AdminJobSummary['latest_status'] }) {
   if (status === 'success') {
     return (
-      <Badge className="bg-green-100 text-green-800 hover:bg-green-100">success</Badge>
+      <Badge className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/30">success</Badge>
     )
   }
   if (status === 'failed') {
     return (
-      <Badge className="bg-red-100 text-red-800 hover:bg-red-100">failed</Badge>
+      <Badge className="bg-red-100 text-red-800 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/30">failed</Badge>
     )
   }
   if (status === 'running') {
     return (
-      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 inline-flex items-center gap-1">
+      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 inline-flex items-center gap-1 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/30">
         <span className="inline-block animate-spin">⟳</span>
         running
       </Badge>
@@ -41,13 +41,13 @@ export function JobCard({ job, onRunNow }: JobCardProps) {
       <CardContent className="p-4 space-y-3">
         {/* Header row */}
         <div className="flex items-center justify-between">
-          <span className="font-bold text-gray-900 text-sm">{job.job_name}</span>
+          <span className="font-bold text-foreground text-sm">{job.job_name}</span>
           <StatusBadge status={job.latest_status} />
         </div>
 
         {/* Latest run info */}
         {job.latest_status !== 'never_run' && job.latest_started_at && (
-          <div className="text-xs text-gray-500 space-y-0.5">
+          <div className="text-xs text-muted-foreground space-y-0.5">
             <div>Last run: {new Date(job.latest_started_at).toLocaleString()}</div>
             {job.latest_duration_seconds != null && (
               <div>Duration: {job.latest_duration_seconds.toFixed(1)}s</div>
@@ -66,7 +66,7 @@ export function JobCard({ job, onRunNow }: JobCardProps) {
 
         {/* Collapsible run history */}
         <details>
-          <summary className="text-xs text-gray-500 cursor-pointer select-none">
+          <summary className="text-xs text-muted-foreground cursor-pointer select-none">
             Last {job.runs.length} runs
           </summary>
           <div className="mt-2">

@@ -2,6 +2,7 @@
 from __future__ import annotations
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 import requests
@@ -13,8 +14,28 @@ from app.market_data.models import MutualFund, NavHistory
 logger = structlog.get_logger()
 
 MFAPI_BASE = "https://www.mfapi.in/mf"
-RATE_LIMIT_BACKOFF_SECONDS = 60
+RATE_LIMIT_BACKOFF_SECONDS = 120
 REQUEST_DELAY_SECONDS = 0.5
+BATCH_LIMIT = 500
+CURSOR_FILE = Path("data/mfapi_cursor.txt")
+
+
+def read_cursor() -> "str | None":
+    """Return last processed scheme_code from cursor file, or None."""
+    if CURSOR_FILE.exists():
+        return CURSOR_FILE.read_text().strip() or None
+    return None
+
+
+def write_cursor(scheme_code: str) -> None:
+    """Persist current scheme_code as the batch cursor."""
+    CURSOR_FILE.write_text(scheme_code)
+
+
+def clear_cursor() -> None:
+    """Remove cursor file — signals all schemes have been processed."""
+    if CURSOR_FILE.exists():
+        CURSOR_FILE.unlink()
 
 
 def fetch_scheme_history(scheme_code: str, session=None) -> list[dict]:
@@ -85,9 +106,13 @@ def backfill_all_schemes(session, limit: Optional[int] = None) -> dict:
     Backfill historical NAV for all active mutual funds.
     Skips schemes that already have ≥ 252 NAV rows (1 year of data — enough for metrics).
     Processes one scheme at a time with delay. Logs progress every 100 schemes.
+    Resumes from cursor across runs; stops after BATCH_LIMIT schemes per run.
     """
     from sqlalchemy import func
     from app.market_data.models import NavHistory
+
+    last_cursor = read_cursor()
+    past_cursor = (last_cursor is None)
 
     query = session.query(MutualFund).filter(MutualFund.is_active == True)
     if limit:
@@ -104,8 +129,15 @@ def backfill_all_schemes(session, limit: Optional[int] = None) -> dict:
     total_inserted = 0
     total_skipped = 0
     already_sufficient = 0
+    schemes_processed_this_run = 0
 
     for i, fund in enumerate(schemes):
+        # Cursor: skip already-processed schemes
+        if not past_cursor:
+            if fund.scheme_code == last_cursor:
+                past_cursor = True
+            continue
+
         if counts.get(fund.scheme_code, 0) >= 252:
             already_sufficient += 1
             continue
@@ -122,13 +154,29 @@ def backfill_all_schemes(session, limit: Optional[int] = None) -> dict:
             logger.error("mfapi_scheme_error", scheme_code=fund.scheme_code, error=str(e))
             continue
 
+        write_cursor(fund.scheme_code)
+        schemes_processed_this_run += 1
+        if schemes_processed_this_run >= BATCH_LIMIT:
+            logger.info("mfapi_batch_cap_reached", processed=schemes_processed_this_run)
+            break
+
+    if past_cursor and schemes_processed_this_run < BATCH_LIMIT:
+        clear_cursor()
+        logger.info("mfapi_all_schemes_processed")
+
     logger.info(
         "mfapi_backfill_complete",
         schemes_total=len(schemes),
         already_sufficient=already_sufficient,
         total_inserted=total_inserted,
+        schemes_processed_this_run=schemes_processed_this_run,
     )
-    return {"schemes_processed": len(schemes), "inserted": total_inserted, "skipped": total_skipped}
+    return {
+        "schemes_processed": len(schemes),
+        "inserted": total_inserted,
+        "skipped": total_skipped,
+        "schemes_processed_this_run": schemes_processed_this_run,
+    }
 
 
 def run() -> int:

@@ -70,12 +70,12 @@ export function ProductPins() {
   }
 
   return (
-    <div className="bg-white rounded-lg border p-4">
+    <div className="bg-card rounded-lg border p-4">
       {isClientView ? (
         // Client view: hero card grid
         <div>
           {pinnedList.length === 0 ? (
-            <p className="text-gray-400 text-sm py-4 text-center">
+            <p className="text-muted-foreground text-sm py-4 text-center">
               Pin products in Advisor View to build your comparison
             </p>
           ) : (
@@ -89,11 +89,11 @@ export function ProductPins() {
           <div className="space-y-3 mt-4">
             {clients.length > 0 ? (
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Client</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Client</label>
                 <select
                   value={selectedClientId}
                   onChange={(e) => setSelectedClientId(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {clients.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
@@ -123,13 +123,13 @@ export function ProductPins() {
       ) : (
         // Advisor view: keep EXISTING list layout exactly as-is
         <div>
-          <h3 className="font-semibold text-gray-800 mb-3">Selected Products ({pinCount}/5)</h3>
+          <h3 className="font-semibold text-foreground mb-3">Selected Products ({pinCount}/5)</h3>
           {pinnedList.length === 0 ? (
-            <p className="text-gray-400 text-sm">Pin products from the table below to compare them</p>
+            <p className="text-muted-foreground text-sm">Pin products from the table below to compare them</p>
           ) : (
             <ul className="space-y-1 mb-4">
               {pinnedList.map((p) => (
-                <li key={p.id} className="text-sm text-gray-700">{p.name}</li>
+                <li key={p.id} className="text-sm text-muted-foreground">{p.name}</li>
               ))}
             </ul>
           )}
@@ -137,11 +137,11 @@ export function ProductPins() {
           <div className="space-y-3">
             {clients.length > 0 ? (
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Client</label>
+                <label className="block text-xs font-medium text-muted-foreground mb-1">Client</label>
                 <select
                   value={selectedClientId}
                   onChange={(e) => setSelectedClientId(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {clients.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
