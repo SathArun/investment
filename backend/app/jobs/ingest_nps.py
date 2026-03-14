@@ -157,7 +157,7 @@ def parse_nps_html(html: str, as_of_date: Optional[date] = None) -> list[dict]:
 def load_nps_seed() -> list[dict]:
     """Load NPS return records from static seed file (Path B fallback)."""
     data = json.loads(SEED_FILE.read_text())
-    as_of_date = datetime.strptime(data["as_of_date"], "%Y-%m-%d").date()
+    as_of_date = date.today()
     records = []
     for row in data["records"]:
         for horizon in RETURN_HORIZONS:
