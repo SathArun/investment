@@ -133,12 +133,12 @@ beforeEach(() => {
   // filterStore: some components call without selector, some with
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   vi.mocked(useFilterStore).mockImplementation((selector?: (s: any) => any) =>
-    selector ? selector({ ...defaultFilterState }) : ({ ...defaultFilterState } as any),
+    selector ? selector({ ...defaultFilterState }) : ({ ...defaultFilterState } as any), // eslint-disable-line @typescript-eslint/no-explicit-any
   )
   // dashboardStore: some components call without selector, some with
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   vi.mocked(useDashboardStore).mockImplementation((selector?: (s: any) => any) =>
-    selector ? selector({ ...defaultDashboardState }) : ({ ...defaultDashboardState } as any),
+    selector ? selector({ ...defaultDashboardState }) : ({ ...defaultDashboardState } as any), // eslint-disable-line @typescript-eslint/no-explicit-any
   )
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   vi.mocked(useGoalStore).mockReturnValue({ ...defaultGoalState } as any)

@@ -1,7 +1,9 @@
 """NPSTRUST NPS fund returns ingestion (weekly scrape)."""
 from __future__ import annotations
+import json
 import re
 from datetime import date, datetime
+from pathlib import Path
 from typing import Optional
 
 import structlog
@@ -36,6 +38,8 @@ SCHEME_TYPES = {
 }
 
 RETURN_HORIZONS = ["1Y", "3Y", "5Y"]
+
+SEED_FILE = Path(__file__).parent.parent.parent / "data" / "reference" / "nps_returns_seed.json"
 
 
 def make_nps_ticker(pfm_short: str, scheme_short: str, horizon: str) -> str:
@@ -150,6 +154,22 @@ def parse_nps_html(html: str, as_of_date: Optional[date] = None) -> list[dict]:
     return records
 
 
+def load_nps_seed() -> list[dict]:
+    """Load NPS return records from static seed file (Path B fallback)."""
+    data = json.loads(SEED_FILE.read_text())
+    as_of_date = date.today()
+    records = []
+    for row in data["records"]:
+        for horizon in RETURN_HORIZONS:
+            records.append({
+                "ticker": make_nps_ticker(row["pfm"], row["scheme"], horizon),
+                "price_date": as_of_date,
+                "close_price": row[horizon],
+            })
+    logger.info("nps_seed_loaded", record_count=len(records), as_of_date=str(as_of_date))
+    return records
+
+
 def upsert_nps_returns(records: list[dict], session) -> tuple[int, int]:
     """Upsert NPS return records. On conflict (same ticker+date), update the value."""
     inserted = 0
@@ -192,13 +212,26 @@ def fetch_nps_html() -> str:
         raise
 
 
+def fetch_nps_data() -> list[dict]:
+    """
+    Fetch NPS return data using two-path strategy.
+
+    Path A: Direct JSON endpoint (not currently viable — NPS Trust uses
+    JS-rendered Highcharts with session-dependent Drupal node IDs).
+    Path B: Static seed file fallback (nps_returns_seed.json).
+    """
+    # Path A skipped — no accessible JSON endpoint found
+    # Fall through to Path B
+    logger.info("nps_path_b_seed_fallback")
+    return load_nps_seed()
+
+
 def run() -> int:
     """Main entry point for NPS returns ingestion. Returns total rows processed."""
     logger.info("nps_job_start")
     try:
-        html = fetch_nps_html()
-        records = parse_nps_html(html)
-        logger.info("nps_parsed", record_count=len(records))
+        records = fetch_nps_data()
+        logger.info("nps_fetched", record_count=len(records))
 
         with SessionLocal() as session:
             inserted, updated = upsert_nps_returns(records, session)

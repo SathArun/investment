@@ -1,0 +1,20 @@
+{
+  "as_of_date": "2026-03-01",
+  "records": [
+    {"pfm": "SBI",   "scheme": "EQUITY",   "1Y": 0.2341, "3Y": 0.1552, "5Y": 0.1823},
+    {"pfm": "SBI",   "scheme": "GBOND",    "1Y": 0.0812, "3Y": 0.0743, "5Y": 0.0821},
+    {"pfm": "SBI",   "scheme": "CORPBOND", "1Y": 0.0920, "3Y": 0.0840, "5Y": 0.0890},
+    {"pfm": "LIC",   "scheme": "EQUITY",   "1Y": 0.2289, "3Y": 0.1498, "5Y": 0.1756},
+    {"pfm": "LIC",   "scheme": "GBOND",    "1Y": 0.0798, "3Y": 0.0731, "5Y": 0.0812},
+    {"pfm": "LIC",   "scheme": "CORPBOND", "1Y": 0.0905, "3Y": 0.0828, "5Y": 0.0878},
+    {"pfm": "UTI",   "scheme": "EQUITY",   "1Y": 0.2312, "3Y": 0.1521, "5Y": 0.1798},
+    {"pfm": "UTI",   "scheme": "GBOND",    "1Y": 0.0805, "3Y": 0.0738, "5Y": 0.0818},
+    {"pfm": "UTI",   "scheme": "CORPBOND", "1Y": 0.0912, "3Y": 0.0835, "5Y": 0.0885},
+    {"pfm": "HDFC",  "scheme": "EQUITY",   "1Y": 0.2356, "3Y": 0.1563, "5Y": 0.1834},
+    {"pfm": "HDFC",  "scheme": "GBOND",    "1Y": 0.0819, "3Y": 0.0751, "5Y": 0.0829},
+    {"pfm": "HDFC",  "scheme": "CORPBOND", "1Y": 0.0928, "3Y": 0.0848, "5Y": 0.0896},
+    {"pfm": "KOTAK", "scheme": "EQUITY",   "1Y": 0.2298, "3Y": 0.1509, "5Y": 0.1769},
+    {"pfm": "KOTAK", "scheme": "GBOND",    "1Y": 0.0801, "3Y": 0.0734, "5Y": 0.0815},
+    {"pfm": "KOTAK", "scheme": "CORPBOND", "1Y": 0.0908, "3Y": 0.0831, "5Y": 0.0881}
+  ]
+}

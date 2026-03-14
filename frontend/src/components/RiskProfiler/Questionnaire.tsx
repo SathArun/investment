@@ -71,7 +71,7 @@ export function Questionnaire() {
   if (isLoadingQuestions) {
     return (
       <div className="flex justify-center py-12">
-        <p className="text-gray-500">Loading questions...</p>
+        <p className="text-muted-foreground">Loading questions...</p>
       </div>
     )
   }
@@ -82,7 +82,7 @@ export function Questionnaire() {
         {/* Client selector */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label htmlFor="clientId" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="clientId" className="block text-sm font-medium text-muted-foreground">
               Select Client
             </label>
             <button
@@ -96,7 +96,7 @@ export function Questionnaire() {
           <select
             id="clientId"
             {...register('clientId', { required: 'Please select a client' })}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">-- Select client --</option>
             {clients.map((c) => (
@@ -116,7 +116,7 @@ export function Questionnaire() {
                 placeholder="Full name *"
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
-                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-border rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="number"
@@ -125,7 +125,7 @@ export function Questionnaire() {
                 max={120}
                 value={newClientAge}
                 onChange={(e) => setNewClientAge(e.target.value)}
-                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-border rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
@@ -141,8 +141,8 @@ export function Questionnaire() {
 
         {/* Questions */}
         {questions.map((question, idx) => (
-          <div key={question.id} className="p-4 bg-white rounded-lg border border-gray-200">
-            <p className="text-sm font-medium text-gray-800 mb-3">
+          <div key={question.id} className="p-4 bg-card rounded-lg border border-border">
+            <p className="text-sm font-medium text-foreground mb-3">
               {idx + 1}. {question.text}
             </p>
             <div className="space-y-2">
@@ -159,7 +159,7 @@ export function Questionnaire() {
                     })}
                     className="mt-0.5"
                   />
-                  <span className="text-sm text-gray-700">{opt.label}</span>
+                  <span className="text-sm text-muted-foreground">{opt.label}</span>
                 </label>
               ))}
             </div>
@@ -184,13 +184,13 @@ export function Questionnaire() {
 
       {profile && (
         <div className="mt-8 space-y-6">
-          <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 text-center">
+          <div className="p-6 bg-card rounded-lg border border-border shadow-sm">
+            <h2 className="text-lg font-semibold text-foreground mb-4 text-center">
               Risk Assessment Result
             </h2>
             <ScoreMeter category={profile.risk_category} score={profile.risk_score} />
             {profile.risk_description && (
-              <p className="mt-4 text-sm text-gray-600 text-center">{profile.risk_description}</p>
+              <p className="mt-4 text-sm text-muted-foreground text-center">{profile.risk_description}</p>
             )}
           </div>
           <CompliancePack profileId={profile.id} />

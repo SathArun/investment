@@ -13,10 +13,19 @@ from app.market_data.models import MutualFund, NavHistory
 logger = structlog.get_logger()
 
 AMFI_URL = "https://www.amfiindia.com/spages/NAVAll.txt"
+AMFI_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/122.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/plain, */*",
+    "Accept-Encoding": "gzip, deflate, br",
+}
 
 def fetch_amfi_nav() -> str:
     """Fetch raw NAV text from AMFI."""
-    resp = requests.get(AMFI_URL, timeout=30)
+    resp = requests.get(AMFI_URL, timeout=30, headers=AMFI_HEADERS)
     resp.raise_for_status()
     return resp.text
 
