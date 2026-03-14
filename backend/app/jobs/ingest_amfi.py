@@ -1,6 +1,6 @@
 """AMFI daily NAV ingestion job."""
 from __future__ import annotations
-import logging
+import re
 from datetime import date, datetime
 from typing import Iterator
 
@@ -23,6 +23,66 @@ AMFI_HEADERS = {
     "Accept-Encoding": "gzip, deflate, br",
 }
 
+# Maps AMFI category substrings (lowercased) → asset_class_id
+_AMFI_CATEGORY_MAP: list[tuple[str, str]] = [
+    ("large cap",           "eq_largecap"),
+    ("mid cap",             "eq_midcap"),
+    ("small cap",           "eq_smallcap"),
+    ("flexi cap",           "eq_flexicap"),
+    ("multi cap",           "eq_flexicap"),
+    ("focused fund",        "eq_flexicap"),
+    ("elss",                "eq_elss"),
+    ("equity linked saving","eq_elss"),
+    ("index fund",          "eq_index"),
+    ("exchange traded",     "eq_index"),
+    ("etf",                 "eq_index"),
+    ("balanced advantage",  "eq_balanced"),
+    ("aggressive hybrid",   "eq_balanced"),
+    ("conservative hybrid", "eq_balanced"),
+    ("multi asset",         "eq_balanced"),
+    ("liquid fund",         "debt_liquid"),
+    ("overnight fund",      "debt_liquid"),
+    ("ultra short",         "debt_shortterm"),
+    ("low duration",        "debt_shortterm"),
+    ("short duration",      "debt_shortterm"),
+    ("money market",        "debt_shortterm"),
+    ("corporate bond",      "debt_corporate"),
+    ("credit risk",         "debt_corporate"),
+    ("banking and psu",     "debt_corporate"),
+    ("gilt",                "debt_gilt"),
+    ("gold",                "gold_etf"),
+]
+
+
+def _amfi_category_to_asset_class_id(amfi_category: str | None) -> str | None:
+    """Return asset_class_id for a given AMFI category string, or None if unmapped."""
+    if not amfi_category:
+        return None
+    lower = amfi_category.lower()
+    for keyword, ac_id in _AMFI_CATEGORY_MAP:
+        if keyword in lower:
+            return ac_id
+    return None
+
+
+def _extract_sebi_category(header_line: str) -> str | None:
+    """
+    Extract the SEBI sub-category from an AMFI header line.
+    Handles both:
+      'Open Ended Schemes(Equity Scheme - Large Cap Fund)'  → 'Large Cap Fund'
+      'Large Cap Fund'                                       → 'Large Cap Fund'
+    """
+    m = re.search(r'\(([^)]+)\)', header_line)
+    if m:
+        inner = m.group(1)
+        # Remove prefix like 'Equity Scheme - '
+        if ' - ' in inner:
+            return inner.split(' - ', 1)[1].strip()
+        return inner.strip()
+    # Plain category line (no parens)
+    return header_line.strip() or None
+
+
 def fetch_amfi_nav() -> str:
     """Fetch raw NAV text from AMFI."""
     resp = requests.get(AMFI_URL, timeout=30, headers=AMFI_HEADERS)
@@ -32,16 +92,21 @@ def fetch_amfi_nav() -> str:
 
 def parse_amfi_nav(raw_text: str) -> Iterator[dict]:
     """
-    Parse AMFI pipe-delimited NAV text.
+    Parse AMFI semicolon-delimited NAV text.
 
-    AMFI format has category headers interspersed — lines ending with ';'
-    or lines that don't have 6 pipe-delimited fields are skipped.
+    Category header lines (no ';') are tracked and attached to subsequent fund rows.
     Malformed rows are logged and skipped, never raised.
     """
+    current_category: str | None = None
     for line in raw_text.strip().splitlines():
         line = line.strip()
-        # Skip empty lines, category header lines (no semicolons), and the header row
-        if not line or ';' not in line:
+        if not line:
+            continue
+        # Lines without ';' are category headers or blank separators
+        if ';' not in line:
+            category = _extract_sebi_category(line)
+            if category:
+                current_category = category
             continue
         if line.startswith('Scheme Code'):
             continue
@@ -50,13 +115,11 @@ def parse_amfi_nav(raw_text: str) -> Iterator[dict]:
             logger.warning("amfi_parse_skip", reason="wrong_field_count", line=line[:80])
             continue
         scheme_code_str, _, _, scheme_name, nav_str, date_str = parts
-        # Validate scheme code is integer
         try:
             scheme_code = str(int(scheme_code_str.strip()))
         except ValueError:
             logger.warning("amfi_parse_skip", reason="invalid_scheme_code", value=scheme_code_str)
             continue
-        # Validate NAV
         try:
             nav = float(nav_str.strip())
             if nav <= 0:
@@ -64,7 +127,6 @@ def parse_amfi_nav(raw_text: str) -> Iterator[dict]:
         except ValueError:
             logger.warning("amfi_parse_skip", reason="invalid_nav", value=nav_str)
             continue
-        # Parse date: DD-Mon-YYYY
         try:
             nav_date = datetime.strptime(date_str.strip(), "%d-%b-%Y").date()
         except ValueError:
@@ -75,6 +137,7 @@ def parse_amfi_nav(raw_text: str) -> Iterator[dict]:
             "scheme_name": scheme_name.strip(),
             "nav": nav,
             "nav_date": nav_date,
+            "amfi_category": current_category,
         }
 
 
@@ -89,22 +152,40 @@ def upsert_nav_history(records: list[dict], session) -> tuple[int, int]:
       Pass 2 — insert NavHistory rows (FK now satisfied).
     """
     # Pass 1: ensure every scheme_code has a MutualFund catalog row
-    known_codes = {r[0] for r in session.query(MutualFund.scheme_code).all()}
+    # Also update amfi_category / asset_class_id for existing rows that lack them.
+    existing_funds: dict[str, MutualFund] = {
+        mf.scheme_code: mf
+        for mf in session.query(MutualFund).all()
+    }
     new_funds = 0
+    updated_funds = 0
     for record in records:
         scheme_code = record["scheme_code"]
-        if scheme_code not in known_codes:
-            session.add(MutualFund(
+        amfi_cat = record.get("amfi_category")
+        ac_id = _amfi_category_to_asset_class_id(amfi_cat)
+        if scheme_code not in existing_funds:
+            mf = MutualFund(
                 scheme_code=scheme_code,
                 scheme_name=record["scheme_name"],
+                amfi_category=amfi_cat,
+                asset_class_id=ac_id,
                 is_active=True,
-            ))
-            known_codes.add(scheme_code)
+            )
+            session.add(mf)
+            existing_funds[scheme_code] = mf
             new_funds += 1
+        else:
+            mf = existing_funds[scheme_code]
+            # Back-fill missing category/asset_class on existing rows
+            if amfi_cat and not mf.amfi_category:
+                mf.amfi_category = amfi_cat
+                updated_funds += 1
+            if ac_id and not mf.asset_class_id:
+                mf.asset_class_id = ac_id
 
-    if new_funds:
-        session.flush()  # Push MutualFund rows to DB before NavHistory FK check
-        logger.info("amfi_new_funds_flushed", new_funds=new_funds)
+    if new_funds or updated_funds:
+        session.flush()
+        logger.info("amfi_funds_synced", new_funds=new_funds, updated_funds=updated_funds)
 
     # Pass 2: insert NAV history rows
     inserted = 0
@@ -125,7 +206,7 @@ def upsert_nav_history(records: list[dict], session) -> tuple[int, int]:
             logger.info("amfi_upsert_progress", inserted=inserted)
 
     session.commit()
-    logger.info("amfi_upsert_done", new_funds=new_funds, inserted=inserted, skipped=skipped)
+    logger.info("amfi_upsert_done", new_funds=new_funds, updated_funds=updated_funds, inserted=inserted, skipped=skipped)
     return inserted, skipped
 
 

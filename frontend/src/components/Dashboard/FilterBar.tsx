@@ -82,7 +82,7 @@ export function FilterBar() {
   function handleRiskFilterChange(value: string) {
     const risk = value as RiskFilter
     setRiskFilter(risk)
-    // No API call — re-sort from cache
+    fetchProducts(taxBracket, timeHorizon, risk)
   }
 
   return (

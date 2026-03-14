@@ -97,7 +97,7 @@ export function SIPModeler() {
             min={500}
             value={monthlySip}
             onChange={(e) => setMonthlySip(Number(e.target.value))}
-            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -112,7 +112,7 @@ export function SIPModeler() {
             max={30}
             value={stepupPct}
             onChange={(e) => setStepupPct(Number(e.target.value))}
-            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -127,7 +127,7 @@ export function SIPModeler() {
             max={40}
             value={duration}
             onChange={(e) => setDuration(Number(e.target.value))}
-            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -143,7 +143,7 @@ export function SIPModeler() {
             step={0.1}
             value={baseReturn}
             onChange={(e) => setBaseReturn(Number(e.target.value))}
-            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -159,7 +159,7 @@ export function SIPModeler() {
             step={0.1}
             value={compReturn}
             onChange={(e) => setCompReturn(Number(e.target.value))}
-            className="w-full border border-border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>

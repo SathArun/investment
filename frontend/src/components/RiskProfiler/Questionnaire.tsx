@@ -96,7 +96,7 @@ export function Questionnaire() {
           <select
             id="clientId"
             {...register('clientId', { required: 'Please select a client' })}
-            className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded-md px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">-- Select client --</option>
             {clients.map((c) => (
@@ -109,14 +109,14 @@ export function Questionnaire() {
             <p className="text-red-500 text-xs mt-1">{errors.clientId.message}</p>
           )}
           {showAddClient && (
-            <div className="mt-2 p-3 border border-blue-200 rounded-md bg-blue-50 space-y-2">
-              <p className="text-xs font-semibold text-blue-700">New Client</p>
+            <div className="mt-2 p-3 border border-primary/30 rounded-md bg-primary/10 space-y-2">
+              <p className="text-xs font-semibold text-primary dark:text-blue-400">New Client</p>
               <input
                 type="text"
                 placeholder="Full name *"
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
-                className="w-full border border-border rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-border rounded px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="number"
@@ -125,7 +125,7 @@ export function Questionnaire() {
                 max={120}
                 value={newClientAge}
                 onChange={(e) => setNewClientAge(e.target.value)}
-                className="w-full border border-border rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-border rounded px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"

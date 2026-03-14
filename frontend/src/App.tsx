@@ -17,6 +17,7 @@ import { SIPModeler } from '@/components/ScenarioPlanner/SIPModeler'
 import { StressTest } from '@/components/ScenarioPlanner/StressTest'
 import { RetirementWithdrawal } from '@/components/ScenarioPlanner/RetirementWithdrawal'
 import { useDashboardStore } from '@/store/dashboardStore'
+import { useFilterStore } from '@/store/filterStore'
 import { useUIStore } from '@/store/uiStore'
 import { useAdminStore } from '@/store/adminStore'
 import { JobCard } from '@/components/Admin/JobCard'
@@ -26,9 +27,11 @@ function DashboardPage() {
   const isClientView = useUIStore((s) => s.isClientView)
   const setSelectedProduct = useUIStore((s) => s.setSelectedProduct)
   const fetchProducts = useDashboardStore((s) => s.fetchProducts)
+  const { taxBracket, timeHorizon, riskFilter } = useFilterStore()
 
   useEffect(() => {
-    fetchProducts(0, 'long', 'All')
+    fetchProducts(taxBracket, timeHorizon, riskFilter)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchProducts])
 
   return (
