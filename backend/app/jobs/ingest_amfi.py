@@ -40,13 +40,12 @@ def parse_amfi_nav(raw_text: str) -> Iterator[dict]:
     """
     for line in raw_text.strip().splitlines():
         line = line.strip()
-        # Skip empty lines and category header lines (end with ';' or have no pipes)
-        if not line or line.endswith(';') or '|' not in line:
+        # Skip empty lines, category header lines (no semicolons), and the header row
+        if not line or ';' not in line:
             continue
-        # Skip the header row itself
         if line.startswith('Scheme Code'):
             continue
-        parts = line.split('|')
+        parts = line.split(';')
         if len(parts) != 6:
             logger.warning("amfi_parse_skip", reason="wrong_field_count", line=line[:80])
             continue

@@ -40,8 +40,8 @@ export function GoalForm() {
       target_amount_inr: Number(data.target_amount_inr),
       current_corpus_inr: Number(data.current_corpus_inr),
       monthly_sip_inr: Number(data.monthly_sip_inr),
-      annual_stepup_pct: Number(data.annual_stepup_pct),
-      inflation_rate: Number(data.inflation_rate),
+      annual_stepup_pct: Number(data.annual_stepup_pct) / 100,
+      inflation_rate: Number(data.inflation_rate) / 100,
     })
   }
 

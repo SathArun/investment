@@ -13,7 +13,7 @@ from app.market_data.models import MutualFund, NavHistory
 
 logger = structlog.get_logger()
 
-MFAPI_BASE = "https://www.mfapi.in/mf"
+MFAPI_BASE = "https://api.mfapi.in/mf"
 RATE_LIMIT_BACKOFF_SECONDS = 120
 REQUEST_DELAY_SECONDS = 0.5
 BATCH_LIMIT = 500
@@ -82,6 +82,15 @@ def backfill_historical_nav(scheme_code: str, session) -> tuple[int, int]:
     Returns (inserted, skipped).
     """
     records = fetch_scheme_history(scheme_code)
+    # Deduplicate within the fetched batch before hitting the DB
+    seen: set[tuple] = set()
+    deduped = []
+    for r in records:
+        key = (r["scheme_code"], r["nav_date"])
+        if key not in seen:
+            seen.add(key)
+            deduped.append(r)
+    records = deduped
     inserted = 0
     skipped = 0
     for record in records:

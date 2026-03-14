@@ -40,10 +40,10 @@ function getBarColor(drawdown: number): string {
 }
 
 function getSeverityColor(drawdown: number): string {
-  if (drawdown <= -40) return 'text-red-700 bg-red-50 border-red-200'
-  if (drawdown <= -20) return 'text-orange-700 bg-orange-50 border-orange-200'
-  if (drawdown <= -10) return 'text-amber-700 bg-amber-50 border-amber-200'
-  return 'text-lime-700 bg-lime-50 border-lime-200'
+  if (drawdown <= -40) return 'text-red-700 bg-red-50 border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:border-red-900'
+  if (drawdown <= -20) return 'text-orange-700 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-900/20 dark:border-orange-900'
+  if (drawdown <= -10) return 'text-amber-700 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-900/20 dark:border-amber-900'
+  return 'text-lime-700 bg-lime-50 border-lime-200 dark:text-lime-400 dark:bg-lime-900/20 dark:border-lime-900'
 }
 
 function getShortName(name: string): string {

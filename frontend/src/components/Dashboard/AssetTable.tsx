@@ -13,11 +13,12 @@ interface AssetTableProps {
 
 type SortKey = keyof Pick<
   ProductRow,
-  'name' | 'sebi_risk_level' | 'cagr_1y' | 'cagr_3y' | 'cagr_5y' | 'post_tax_return_3y' | 'advisor_score'
+  'name' | 'product_subtype' | 'sebi_risk_level' | 'cagr_1y' | 'cagr_3y' | 'cagr_5y' | 'post_tax_return_3y' | 'advisor_score'
 >
 
 const SORTABLE_COLUMNS: { key: SortKey; label: string; highlight?: boolean }[] = [
   { key: 'name', label: 'Product Name' },
+  { key: 'product_subtype', label: 'Type' },
   { key: 'sebi_risk_level', label: 'SEBI Risk' },
   { key: 'cagr_1y', label: '1Y CAGR' },
   { key: 'cagr_3y', label: '3Y CAGR' },
@@ -27,7 +28,7 @@ const SORTABLE_COLUMNS: { key: SortKey; label: string; highlight?: boolean }[] =
 ]
 
 export const CLIENT_VIEW_COLUMNS = [
-  'name', 'sebi_risk_level', 'cagr_1y', 'cagr_3y', 'cagr_5y', 'post_tax_return_3y',
+  'name', 'product_subtype', 'sebi_risk_level', 'cagr_1y', 'cagr_3y', 'cagr_5y', 'post_tax_return_3y',
 ] as const
 
 function getSortValue(product: ProductRow, key: SortKey): number | string {
@@ -156,6 +157,12 @@ export function AssetTable({ isClientView = false, onSelectProduct }: AssetTable
                             return (
                               <td key="name" className="px-4 py-3 font-medium text-foreground">
                                 {product.name}
+                              </td>
+                            )
+                          case 'product_subtype':
+                            return (
+                              <td key="product_subtype" className="px-4 py-3 text-muted-foreground text-xs">
+                                {product.product_subtype ?? '—'}
                               </td>
                             )
                           case 'sebi_risk_level':

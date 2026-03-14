@@ -26,8 +26,8 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null
   return (
-    <div className="bg-white border border-gray-200 rounded p-3 shadow text-sm">
-      <p className="font-semibold text-gray-700 mb-1">Year {label}</p>
+    <div className="bg-card border border-border rounded p-3 shadow text-sm">
+      <p className="font-semibold text-foreground mb-1">Year {label}</p>
       {payload.map((entry) => (
         <p key={entry.name} style={{ color: entry.color }}>
           Balance: {formatCurrency(entry.value)}
@@ -79,13 +79,13 @@ export function RetirementWithdrawal() {
   }
 
   return (
-    <div className="bg-white rounded-lg border p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Retirement Withdrawal Simulator</h2>
+    <div className="bg-card rounded-lg border border-border p-6">
+      <h2 className="text-xl font-semibold text-foreground mb-4">Retirement Withdrawal Simulator</h2>
 
       {/* Inputs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div>
-          <label htmlFor="rw-corpus" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="rw-corpus" className="block text-sm font-medium text-muted-foreground mb-1">
             Initial Corpus (&#8377;)
           </label>
           <input
@@ -94,7 +94,7 @@ export function RetirementWithdrawal() {
             min={MIN_CORPUS}
             value={corpus}
             onChange={(e) => setCorpus(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {corpusError && (
             <p className="text-red-500 text-xs mt-1">{corpusError}</p>
@@ -102,7 +102,7 @@ export function RetirementWithdrawal() {
         </div>
 
         <div>
-          <label htmlFor="rw-withdrawal" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="rw-withdrawal" className="block text-sm font-medium text-muted-foreground mb-1">
             Monthly Withdrawal (&#8377;)
           </label>
           <input
@@ -111,12 +111,12 @@ export function RetirementWithdrawal() {
             min={1000}
             value={monthlyWithdrawal}
             onChange={(e) => setMonthlyWithdrawal(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="rw-return" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="rw-return" className="block text-sm font-medium text-muted-foreground mb-1">
             Expected Return %
           </label>
           <input
@@ -127,12 +127,12 @@ export function RetirementWithdrawal() {
             step={0.1}
             value={returnPct}
             onChange={(e) => setReturnPct(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="rw-maxyears" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="rw-maxyears" className="block text-sm font-medium text-muted-foreground mb-1">
             Max Simulation Years
           </label>
           <input
@@ -142,7 +142,7 @@ export function RetirementWithdrawal() {
             max={60}
             value={maxYears}
             onChange={(e) => setMaxYears(Number(e.target.value))}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-border rounded px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -166,7 +166,7 @@ export function RetirementWithdrawal() {
       {chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={320}>
           <AreaChart data={chartData} margin={{ top: 8, right: 16, left: 16, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis
               dataKey="year"
               label={{ value: 'Year', position: 'insideBottomRight', offset: -8 }}

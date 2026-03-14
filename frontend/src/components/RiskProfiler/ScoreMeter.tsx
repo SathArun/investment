@@ -49,15 +49,15 @@ export function ScoreMeter({ category, score }: { category: string; score: numbe
         ))}
         <line
           x1="0" y1="0" x2="0" y2="-85"
-          stroke="#1f2937"
+          stroke="hsl(var(--foreground))"
           strokeWidth="3"
           strokeLinecap="round"
           transform={`rotate(${angle})`}
         />
-        <circle cx="0" cy="0" r="5" fill="#1f2937" />
+        <circle cx="0" cy="0" r="5" fill="hsl(var(--foreground))" />
       </svg>
-      <p className="font-semibold text-gray-800">{category}</p>
-      <p className="text-gray-500 text-sm">Score: {score}</p>
+      <p className="font-semibold text-foreground">{category}</p>
+      <p className="text-muted-foreground text-sm">Score: {score}</p>
     </div>
   )
 }

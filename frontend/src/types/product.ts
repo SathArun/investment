@@ -11,6 +11,8 @@ export interface ProductRow {
   id: number
   name: string
   asset_class: string
+  category?: string
+  product_subtype?: string
   sebi_risk_level: number
   cagr_1y: number | null
   cagr_3y: number | null

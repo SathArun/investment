@@ -1,5 +1,7 @@
 from __future__ import annotations
+import json
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Optional
 import pandas as pd
 from sqlalchemy.orm import Session
@@ -7,6 +9,26 @@ from sqlalchemy import desc, asc, func
 
 from app.analytics.models import AdvisorScore, ComputedMetric
 from app.market_data.models import AssetClass, MutualFund, NavHistory, IndexHistory
+
+_INDEX_TICKERS_PATH = Path(__file__).parent.parent.parent / "data" / "reference" / "index_tickers.json"
+_TICKER_TO_AC_ID: dict[str, str] = {
+    entry["ticker"]: entry["asset_class_id"]
+    for entry in json.loads(_INDEX_TICKERS_PATH.read_text())
+}
+_TICKER_TO_NAME: dict[str, str] = {
+    entry["ticker"]: entry["name"]
+    for entry in json.loads(_INDEX_TICKERS_PATH.read_text())
+}
+_AC_ID_TO_TYPE: dict[str, str] = {
+    "eq_largecap": "Large Cap", "eq_midcap": "Mid Cap", "eq_smallcap": "Small Cap",
+    "eq_flexicap": "Flexi Cap", "eq_elss": "ELSS", "eq_index": "Equity Index",
+    "eq_balanced": "Balanced", "eq_direct": "Direct Equity",
+    "debt_liquid": "Liquid", "debt_shortterm": "Short Duration",
+    "debt_corporate": "Corporate Bond", "debt_gilt": "Gilt",
+    "gold_etf": "Gold ETF", "gold_sgb": "Sovereign Gold Bond",
+    "ppf": "PPF", "nps": "NPS", "fd": "Fixed Deposit",
+    "reit": "REIT", "invit": "InvIT",
+}
 
 
 SEBI_RISK_LABELS = {
@@ -107,7 +129,8 @@ def get_products(
         funds_by_id = {f.scheme_code: f for f in session.query(MutualFund).filter(MutualFund.scheme_code.in_(fund_ids)).all()}
 
     ac_ids = list({f.asset_class_id for f in funds_by_id.values() if f.asset_class_id}
-                  | {s.product_id for s in scores if s.product_type != "mutual_fund"})
+                  | {_TICKER_TO_AC_ID[s.product_id] for s in scores
+                     if s.product_type != "mutual_fund" and s.product_id in _TICKER_TO_AC_ID})
     acs_by_id: dict = {}
     if ac_ids:
         acs_by_id = {a.id: a for a in session.query(AssetClass).filter(AssetClass.id.in_(ac_ids)).all()}
@@ -132,10 +155,13 @@ def get_products(
             asset_class = acs_by_id.get(fund.asset_class_id) if (fund and fund.asset_class_id) else None
             name = fund.scheme_name if fund else score.product_id
             expense_ratio = fund.expense_ratio if fund else None
+            product_subtype = (fund.amfi_category or "Mutual Fund") if fund else "Mutual Fund"
         else:
-            asset_class = acs_by_id.get(score.product_id)
-            name = asset_class.name if asset_class else score.product_id
+            ac_id = _TICKER_TO_AC_ID.get(score.product_id)
+            asset_class = acs_by_id.get(ac_id) if ac_id else None
+            name = _TICKER_TO_NAME.get(score.product_id) or (asset_class.name if asset_class else score.product_id)
             expense_ratio = asset_class.expense_ratio_typical if asset_class else None
+            product_subtype = _AC_ID_TO_TYPE.get(ac_id, asset_class.category if asset_class else "Index")
 
         sebi_risk_level = asset_class.sebi_risk_level if asset_class else None
         lock_in_days = asset_class.lock_in_days if asset_class else 0
@@ -156,6 +182,7 @@ def get_products(
             "name": name,
             "asset_class": score.product_id if score.product_type == "index" else (asset_class.id if asset_class else None),
             "category": category,
+            "product_subtype": product_subtype,
             "sebi_risk_level": sebi_risk_level,
             "sebi_risk_label": SEBI_RISK_LABELS.get(sebi_risk_level, "Unknown") if sebi_risk_level else None,
             "cagr_1y": cm.cagr_1y if cm else None,

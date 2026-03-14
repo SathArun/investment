@@ -6,6 +6,13 @@ interface AllocationItem {
   pct: number
 }
 
+interface CorpusProjectionRow {
+  year: number
+  conservative: number
+  base: number
+  optimistic: number
+}
+
 interface CorpusProjection {
   conservative: number[]
   base: number[]
@@ -77,7 +84,14 @@ export const useGoalStore = create<GoalState>((set) => ({
     try {
       const { data: goal } = await apiClient.post('/goals', body)
       const { data: plan } = await apiClient.get(`/goals/${goal.id}/plan`)
-      set({ currentPlan: plan, isLoadingPlan: false })
+      // API returns corpus_projection as array of row objects; reshape to parallel arrays
+      const rows: CorpusProjectionRow[] = plan.corpus_projection ?? []
+      const corpus_projection: CorpusProjection = {
+        conservative: rows.map((r) => r.conservative),
+        base: rows.map((r) => r.base),
+        optimistic: rows.map((r) => r.optimistic),
+      }
+      set({ currentPlan: { ...plan, corpus_projection }, isLoadingPlan: false })
     } catch {
       set({ isLoadingPlan: false })
     }
