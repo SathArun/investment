@@ -271,3 +271,37 @@ Static JSON files in `backend/data/reference/` (committed to repo, not from DB):
 | Charts | Recharts 2 |
 | Auth | JWT (python-jose) + bcrypt (passlib) |
 | Testing | pytest (backend), Vitest (frontend) |
+
+---
+
+## Claude Code Automations
+
+### MCP Servers (installed)
+
+| Server | Purpose |
+|---|---|
+| **context7** | Live docs lookup for FastAPI, SQLAlchemy, React, etc. |
+| **Playwright** | Browser automation for UI testing and e2e flows |
+| **GitHub** | Issues, PRs, Actions — install with `claude mcp add github -- npx -y @modelcontextprotocol/server-github` (requires `GITHUB_TOKEN` env var) |
+
+### Hooks (`.claude/settings.json`)
+
+| Hook | Trigger | Behavior |
+|---|---|---|
+| **TypeScript typecheck** | PostToolUse: Edit/Write on `frontend/**/*.ts(x)` | Runs `npm run typecheck`, shows last 30 lines |
+| **Block .env edits** | PreToolUse: Edit/Write | Blocks writes to `.env*` files (except `.env.example`) with exit code 2 |
+
+Hook scripts live in `.claude/hooks/` — edit them there, not inline in `settings.json`.
+
+### Skills (`.claude/skills/`)
+
+| Skill | Invocation | Purpose |
+|---|---|---|
+| `/create-migration` | User-only | Guides Alembic autogenerate → review → upgrade head flow |
+| `/run-ingestion` | User-only | Menu-driven manual run of any background job |
+
+### Subagents (`.claude/agents/`)
+
+| Agent | Purpose |
+|---|---|
+| **security-reviewer** | Reviews code against all 10 SEBI rules + OWASP top 10; invoked via `Agent` tool after auth/client/DB/PDF changes |

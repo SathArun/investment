@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /c/Arun/investment/.claude/hooks/typecheck_on_ts_edit.py"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /c/Arun/investment/.claude/hooks/block_env_edit.py"
+          }
+        ]
+      }
+    ]
+  }
+}
